@@ -53,8 +53,8 @@
       <el-table-column prop="avatar" label="用户头像" align="center">
         <template slot-scope="{ row }">
           <el-image style="width: auto; height: 40px; border:none;cursor: pointer;"
-                  :src="row.image"
-                  :preview-src-list="[ `${row.image}` ]" >
+                  :src="row.avatar"
+                  :preview-src-list="[ `${row.avatar}` ]" >
               <div slot="error" class="image-slot">
 <!--                  <i class="el-icon-picture-outline"></i>-->
                   <img src="@/assets/notimage.png">
@@ -242,11 +242,11 @@
           </div>
           <el-form-item
               label="头像:"
-              prop="region"
+              prop="image"
               class="uploadImg"
           >
             <!--必须加header，不然后端会拦截-->
-              <MyElUploadImage :avatar="classData.image"></MyElUploadImage>
+              <MyElUploadImage :avatar.sync="classData.avatar"></MyElUploadImage>
           </el-form-item>
 
         </el-form>
@@ -280,8 +280,11 @@
 
 <script>
 import router from "@/router";
+import * as Api from "@/api/login";
+import MyElUploadImage from "@/components/MyElUploadImage.vue";
 export default {
   name: "UserManagement",
+    components: {MyElUploadImage},
   data() {
     return {
 
@@ -420,7 +423,7 @@ export default {
       if (this.input){
         params.name = this.input ? this.input : undefined
       }
-      const res = " await Api.getUserList(params)"
+      const res = await Api.getUserList(params)
       console.log(res)
       if (String(res.code) === '1') {
         this.tableData = res.data.records || []
@@ -478,7 +481,7 @@ export default {
         'confirmButtonText': '确定',
         'cancelButtonText': '取消',
       }).then(async () => {
-        const res = "await Api.delUserList(params)"
+        const res = await Api.delUserList(params)
         if (String(res.code)==='1'){
           this.$message.success(res.msg)
           this.handleQuery()
@@ -507,9 +510,7 @@ export default {
         'cancelButtonText': '取消',
         'type': 'warning'
       }).then(async () => {
-        // 起售停售---批量起售停售接口
-
-        const res = "await Api.updatauserstatus(data)"
+        const res = await Api.updatauserstatus(data)
         if (String(res.code)==='1'){
           this.$message.success(res.msg)
           this.handleQuery()
@@ -568,26 +569,10 @@ export default {
         this.classData.studentId = ''
       }
     },
-    outSelect(st,index){
-      const _this = this
-      setTimeout(()=> {
-        const obj = JSON.parse(JSON.stringify(_this.dishFlavors[index]))
-        obj.showOption = st
-        _this.dishFlavors.splice(index,1,obj)
-      }, 200)
-    },
-    // inputHandle(val,index){
-    //   // this.selectFlavor(false,index)
-    //   // console.log(val,index)
-    // },
+
     cancel(){
       this.cleanform()
       this.classData.dialogVisible = false
-    },
-    selectHandle(val, key, ind){
-      const arrDate = [...this.dishFlavors]
-      arrDate[key] = JSON.parse(JSON.stringify(this.dishFlavorsData[ind]))
-      this.dishFlavors = arrDate
     },
 
     async submitForm(st) {
@@ -639,7 +624,7 @@ export default {
             data.status = this.classData.status
             data.username = this.classData.username
             data.studentId = this.classData.studentId
-            const res = "await Api.addUser(data)"
+            const res = await Api.addUser(data)
             if (String(res.code) === '1') {
               this.$message.success(res.msg)
               this.cleanform()
@@ -704,7 +689,7 @@ export default {
               data.status = this.classData.status
               data.username = this.classData.username
               data.studentId = this.classData.studentId
-              const res = "await Api.addUser(data)"
+              const res = await Api.addUser(data)
               if (String(res.code)==='1'){
                 this.$message.success(res.msg)
 
@@ -756,7 +741,7 @@ export default {
           data.status = this.classData.status
           data.username = this.classData.username
           data.studentId = this.classData.studentId
-          const res = "await Api.updataforuser(data)"
+          const res = await Api.updataforuser(data)
           if (String(res.code)==='1'){
             this.$message.success(res.msg)
             this.cancel()

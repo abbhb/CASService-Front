@@ -3,12 +3,12 @@
         <header class="header">
             <div class="left" @click="menuCollapse = !menuCollapse;">
 
-                <span class="style-logo-NxwZ7">
-                    <img v-if="bigLogo" src="@/assets/static/media/AILOGO2.png" alt="logo">
-                    <img v-else src="@/assets/static/media/AIBIG.png" alt="logo">
-                </span>
+<!--                <div class="style-logo-NxwZ7">-->
+<!--                    -->
+<!--                </div>-->
+                <span style="color: #000000;font-size: 32px;font-weight: 900;">CAS 认证服务</span>
 <!--                <span>服务平台</span>-->
-                <span class="version">@Version:{{ Version }}</span>
+                <div class="version">@Version:{{ Version }}</div>
             </div>
             <div class="right" style="display: flex;flex-direction: row;align-items: center;">
                 <div style="margin-right: 30px;font-size: 12px;color: rgba(255,255,255,0.78)">
@@ -106,6 +106,7 @@
 <script>
 
 import {menuData} from "@/views/mencCofig";
+import * as Api from "@/api/login";
 
 
 export default {
@@ -259,7 +260,7 @@ export default {
             this.changeUser = true;
         },
         async onLogOut() {
-            const data = "await Api.logoutApi()"
+            const data = await Api.logoutApi()
             console.log(data)
 
             if (String(data.code) === '900') {
@@ -296,6 +297,7 @@ export default {
 
     .left {
       display: flex;
+        flex-direction: row;
       align-items: center;
       white-space: nowrap;
       color: RGB(29, 33, 41);
@@ -401,7 +403,7 @@ export default {
         display: inline-flex;
         width: 148px;
         height: 60px;
-        margin-right: 4px;
+        margin-right: 7rem;
         border-radius: 2px;
     }
 
@@ -411,7 +413,7 @@ export default {
         display: inline-flex;
         width: 36px;
         height: 36px;
-        margin-right: 4px;
+        margin-right: 7rem;
         border-radius: 2px;
     }
 

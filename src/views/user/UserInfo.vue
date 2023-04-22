@@ -36,6 +36,15 @@
                       <el-button @click="reWrite">重置</el-button>
                   </el-form-item>
               </div>
+              <el-form-item
+                  label="头像:"
+                  prop="avatar"
+                  class="uploadImg"
+              >
+                  <!--必须加header，不然后端会拦截-->
+                  <MyElUploadImage :avatar.sync="form.avatar"></MyElUploadImage>
+              </el-form-item>
+
 
 
           </el-form>
@@ -50,11 +59,14 @@
 <script>
 
 import router from "@/router";
+import MyElUploadImage from "@/components/MyElUploadImage.vue";
+import * as Api from "@/api/login";
 
 
 
 export default {
   name: "UserInfo",
+    components: {MyElUploadImage},
   data(){
     return{
       form:{
@@ -64,7 +76,7 @@ export default {
         sex: '',
         studentId:'',
         phone:'',
-          avatar:'',
+        avatar:'',
       },
       form_serve:{
         id:'',
@@ -73,7 +85,7 @@ export default {
         sex: '',
         studentId:'',
         phone:'',
-          avatar:'',
+        avatar:'',
       },
       userInfo:{},
 
@@ -166,18 +178,10 @@ export default {
       data.username = this.form.username
       data.studentId = this.form.studentId
       data.avatar = this.form.avatar
-        const res = ""
+        const res = await Api.updataforuserself(data)
       if (String(res.code)==='1'){
         that.$message.success(res.msg);
-
-        if (String(data.code) === '1'){
-          localStorage.setItem('userInfo',JSON.stringify(data.data))
-          // localStorage.setItem('token',res.data.token)
-          that.init()
-        }else {
-          this.$message.error(data.msg)
           router.push({name:'login'})
-        }
       }
       else {
         this.$message.error(res.msg)
