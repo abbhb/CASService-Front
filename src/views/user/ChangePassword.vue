@@ -35,6 +35,7 @@
 
 <script>
 import router from "@/router";
+import {changePassWord} from "@/api/login";
 
 export default {
   name: "ChangePassword",
@@ -126,7 +127,7 @@ export default {
       var id = that.userInfo.id;
       console.log(id)
       var i = new String(id)
-        const data = i
+        const data = await changePassWord(i,this.userInfo.username,this.passform.password,this.passform.newpassword,this.passform.checkpassword)
       if (String(data.code)==='1'){
         that.$message.success(data.msg);
         localStorage.clear();

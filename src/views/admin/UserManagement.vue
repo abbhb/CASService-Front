@@ -43,11 +43,13 @@
       <el-table-column
           prop="name"
           label="用户名称"
+          sortable
           width="90"
       ></el-table-column>
       <el-table-column
           prop="sex"
           label="用户性别"
+          sortable
           width="90"
       ></el-table-column>
       <el-table-column prop="avatar" label="用户头像" align="center">
@@ -63,7 +65,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="用户状态" width="100">
+      <el-table-column label="用户状态" width="100"  sortable>
         <template slot-scope="scope">
           <span :style="String(scope.row.status) === '0'? 'color: red;margin-right: 10px;': 'color: #0c56dc;margin-right: 10px;'">{{ scope.row.status == '0' ? '封禁' : '正常' }}</span>
         </template>
@@ -72,17 +74,20 @@
 
         <el-table-column
                 prop="permissionName"
+                sortable
                 label="用户权限"
                 width="60"
         >
         </el-table-column>
       <el-table-column
           prop="createTime"
+          sortable
           label="创建时间"
       >
       </el-table-column>
       <el-table-column
           prop="updateTime"
+          sortable
           label="更新时间"
       >
       </el-table-column>

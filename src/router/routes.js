@@ -8,6 +8,7 @@ import UserManagement from "@/views/admin/UserManagement.vue";
 import safeCenter from "@/views/user/SafeCenter.vue";
 import en from "@/views/redirect/en.vue";
 import gitee from "@/views/redirect/gitee.vue";
+import InviteCode from "@/views/admin/invitecode/InviteCode.vue";
 export default [
 	{
 		path: '/',
@@ -107,6 +108,16 @@ export default [
 				meta:{
 					requireAuth: true,
 					needrole:false
+				}
+			},
+			{
+				path: '/InviteCode',
+				name: 'InviteCode',
+				component: InviteCode,
+				meta:{
+					requireAuth: true,
+					needrole:true,
+					roles:[10,1]
 				}
 			},
 

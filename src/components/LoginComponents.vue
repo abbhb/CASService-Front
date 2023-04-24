@@ -1,4 +1,3 @@
-
 <template>
     <div>
         <div class="logins" v-if="!isRegistration">
@@ -53,46 +52,36 @@
                 <el-form-item prop="password">
                     <el-input v-model="registrationForm.password" type="password" show-password placeholder="密码"
                               prefix-icon="el-icon-lock" maxlength="20"
-                              @keyup.enter.native="handleLogin"/>
+                              />
                 </el-form-item>
-                <el-form-item prop="name">
-                    <el-input
-                            v-model="registrationForm.name"
-                            type="text"
-                            auto-complete="off"
-                            placeholder="昵称"
-                            maxlength="20"
-                            prefix-icon="el-icon-user"/>
+                <el-form-item prop="rePassword">
+                    <el-input v-model="registrationForm.rePassword" type="password" show-password placeholder="确认密码"
+                              prefix-icon="el-icon-lock" maxlength="20"
+                              />
                 </el-form-item>
-                <el-form-item prop="sex">
-                    <el-select v-model="registrationForm.sex" placeholder="请选择用户性别">
-                        <el-option
-                                v-for="item in sexoptions"
-                                :key="item.label"
-                                :label="item.label"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
+                <el-form-item prop="inviteCode">
+                    <el-input v-model="registrationForm.inviteCode" show-password placeholder="邀请码"
+                              prefix-icon="el-icon-magic-stick" maxlength="20"
+                              />
                 </el-form-item>
 
-
-                <el-form-item
-                        prop="phone"
-                >
-                    <el-input
-                            v-model="registrationForm.phone"
-                            placeholder="请填写用户手机号"
-                            maxlength="11"
+                <el-form-item prop="email">
+                    <el-input v-model="registrationForm.email" type="email" placeholder="请输入真实电子邮箱地址"
+                              prefix-icon="el-icon-message"
                     />
                 </el-form-item>
-                <el-form-item
-                        prop="studentId"
-                >
-                    <el-input
-                            v-model="registrationForm.studentId"
-                            placeholder="请填写用户学号"
-                            maxlength="18"
-                    />
+                <el-form-item prop="mailCode">
+                    <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;margin:auto;">
+                        <el-input v-model="registrationForm.mailCode" placeholder="请输入邮箱验证码"
+                                  prefix-icon="el-icon-magic-stick"
+                        />
+                        <el-button :disabled="getEmailCodeStatus" class="" size="medium" type="primary"
+                                   @click.native.prevent="getEmailCode">
+                            <span v-if="!getEmailCodeStatus">获取</span>
+                            <span v-else>{{count}}s</span>
+
+                        </el-button>
+                    </div>
                 </el-form-item>
 
 
@@ -114,6 +103,17 @@
 
                 </el-form-item>
             </el-form>
+            <el-dialog
+                title="验证码校验"
+                :visible.sync="openVerify"
+                width="25rem"
+                :show-close="false"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+                :append-to-body="true"
+                style="z-index: 2100">
+                <sliderVerify ref="sliderVerify" @success="verifySuccess"/>
+            </el-dialog>
         </div>
     </div>
 
@@ -126,29 +126,41 @@
  */
 import router from "@/router";
 import {login, login302, loginbytgc, loginbytgc302} from "@/api/auth";
+import {hasUserName, registerUser} from "@/api/login";
+import SliderVerify from "@/components/sliderVerify.vue";
+import {getEmail} from "@/api/email";
+
 
 export default {
     name: "LoginComponents",
+    components: {SliderVerify},
     data() {
         return {
             loginForm: {
                 username: '',
                 password: ''
             },
-            sexoptions: [{label: "男", value: "男"}, {label: "女", value: "女"}],
             registrationForm: {
                 username: '',
                 password: '',
-                name: '',
-                phone: '',
-                studentId: '',
-                sex: '',
+                sex: '未知',
+                rePassword: '',
                 permission: '2',
                 status: '1',//默认启用
                 avatar: '',//url
+                email: '',
+                mailCode: '',
+                inviteCode: '',//邀请码
+                randomCode:'',
+                verificationCode: '',//验证码
             },
             loading: false,
             isRegistration: false,//默认是登录
+            openVerify:false,
+            getEmailCodeStatus:false,
+            count:60,//电子邮件倒计时
+            timer:null,//电子邮件倒计时
+
         }
     },
     computed: {
@@ -167,16 +179,14 @@ export default {
                     callback()
                 }
             }
+
             return {
                 'username': [{'validator': validateUsername, 'trigger': 'blur'}],
-                'password': [{'validator': validatePassword, 'trigger': 'blur'}]
+                'password': [{'validator': validatePassword, 'trigger': 'blur'}],
             }
         },
         registrationRules() {
             return {
-                'name': [
-                    {'required': true, 'message': '请填写用户名称', 'trigger': ['blur']}
-                ],
                 'username': [
                     {
                         'required': true,
@@ -185,8 +195,8 @@ export default {
                             if (!value) {
                                 callback(new Error('请填写用户名称'))
                             } else {
-                                // let params = {"username": this.registrationForm.username}
-                                const res = "await Api.hasUserName(params)"
+                                let params = {"username": this.registrationForm.username}
+                                const res = await hasUserName(params)
                                 if (String(res.code) === '1') {
                                     callback()
                                 } else {
@@ -204,48 +214,24 @@ export default {
                         validator: (rules, value, callback) => {
                             if (!value) {
                                 callback(new Error('请填写用户密码'))
-
                             }
                             callback()
                         },
-                        'trigger': ['blur']
+                        'trigger': ['change']
                     },
                 ],
-                'phone': [
+                'rePassword': [
                     {
                         'required': true,
-                        // 'message': '请填写用户密码',
+                        'message': '请填写确认密码',
                         validator: (rules, value, callback) => {
                             if (!value) {
-                                this.$message.error("请填写用户手机号")
-                                callback(new Error('请填写用户手机号'))
-                            } else {
-                                if (!/^1[34578]\d{9}$/.test(value)) {
-                                    this.$message.error("格式错误")
-                                    callback(new Error('格式错误'))
-                                }
-                                callback()
-
+                                callback(new Error('请填写确认密码'))
                             }
-                        },
-                        'trigger': ['blur']
-                    },
-                ],
-                'studentId': [
-                    {
-                        'required': true,
-                        // 'message': '请填写用户密码',
-                        validator: (rules, value, callback) => {
-                            if (!value) {
-                                this.$message.error("请填写用户学号")
-                                callback(new Error('请填写用户学号'))
-                            } else {
-                                if (!/^[2-2][0-0][2-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/.test(value)) {
-                                    this.$message.error("格式错误")
-                                    callback(new Error('格式错误'))
-                                }
+                            if (value === this.registrationForm.password) {
                                 callback()
                             }
+                            callback(new Error("请保证密码一致"))
                         },
                         'trigger': ['blur']
                     },
@@ -254,7 +240,7 @@ export default {
         }
     },
     async created() {
-        if (window.location.search){
+        if (window.location.search) {
             const service = window.location.search.split("?service=")[1]
             const res = await loginbytgc302(service)
             if (String(res.code) === '1') {
@@ -265,11 +251,11 @@ export default {
                 // Cookies.set('tgc',res.data.tgc)
                 router.push({name: 'userinfo'})
 
-            } else if (String(res.code)==='302'){
+            } else if (String(res.code) === '302') {
                 //需要重定向
-                window.location.href = res.data.service + '?ticket='+res.data.st;
+                window.location.href = res.data.service + '?ticket=' + res.data.st;
             }
-        }else {
+        } else {
             const res = await loginbytgc()
             if (String(res.code) === '1') {
                 //正常登录
@@ -279,9 +265,9 @@ export default {
                 // Cookies.set('tgc',res.data.tgc)
                 router.push({name: 'userinfo'})
 
-            } else if (String(res.code)==='302'){
+            } else if (String(res.code) === '302') {
                 //需要重定向
-                window.location.href = res.data.service + '?ticket='+res.data.st;
+                window.location.href = res.data.service + '?ticket=' + res.data.st;
             }
         }
 
@@ -318,18 +304,18 @@ export default {
 
             return loading;
         },
-        async ButtonRe() {
+        ButtonRe() {
+            if (this.registrationForm.verificationCode===''||this.registrationForm.randomCode===''){
+                this.openVerify = true
+                this.$refs.sliderVerify.init()
+            } else {
+                this.ReCommit()
+            }
+        },
+        ReCommit(){
             this.$refs["registrationForm"].validate(async (valid) => {  //开启校验
                 if (valid) {   // 如果校验通过，请求接口，允许提交表单
                     let data = {}
-                    if (!this.registrationForm.name) {
-                        this.$message.error("请你输入完整")
-                        return false;
-                    }
-                    if (!this.registrationForm.sex) {
-                        this.$message.error("请你输入完整")
-                        return false;
-                    }
                     if (!this.registrationForm.password) {
                         this.$message.error("请你输入完整")
                         return false;
@@ -338,9 +324,8 @@ export default {
                         this.$message.error("请你输入完整")
                         return false;
                     }
-                    if (!this.registrationForm.phone) {
-                        this.$message.error("请你输入完整")
-                        return false;
+                    if (!(this.registrationForm.password===this.registrationForm.rePassword)){
+                        this.$message.error("确认密码需要和密码一致")
                     }
                     if (!this.registrationForm.status) {
                         this.$message.error("请你输入完整")
@@ -354,39 +339,56 @@ export default {
                         this.$message.error("不可在用户名中包含'@'")
                         return false;
                     }
-                    if (!this.registrationForm.studentId) {
-                        this.$message.error("请你输入学号")
+                    if (!this.registrationForm.verificationCode){
+                        this.$message.error("验证码问题")
                         return false;
                     }
-                    data.name = this.registrationForm.name
-                    data.sex = this.registrationForm.sex
+                    if (!this.registrationForm.randomCode){
+                        this.$message.error("验证码问题")
+                        return false;
+                    }
+                    if (!this.registrationForm.inviteCode){
+                        this.$message.error("验证码问题")
+                        return false;
+                    }
+                    if (!this.registrationForm.mailCode){
+                        this.$message.error("验证码问题")
+                        return false;
+                    }
+                    data.sex = this.registrationForm.sex ? this.registrationForm.sex : "未知"
                     data.avatar = this.registrationForm.avatar
                     data.password = this.registrationForm.password
                     data.permission = this.registrationForm.permission
-                    data.phone = this.registrationForm.phone
                     data.status = this.registrationForm.status
                     data.username = this.registrationForm.username
-                    data.studentId = this.registrationForm.studentId
-                    const res = "await Api.createUser(data)"
+                    data.email = this.registrationForm.email
+                    data.rePassword = this.registrationForm.rePassword
+                    data.mailCode = this.registrationForm.mailCode
+                    data.inviteCode = this.registrationForm.inviteCode
+                    data.randomCode = this.registrationForm.randomCode
+                    data.verificationCode = this.registrationForm.verificationCode
+                    const res = await registerUser(data)
                     if (String(res.code) === '1') {
                         this.$message.success(res.msg)
                         this.handleLo()
                     } else {
+                        this.registrationForm.randomCode = ''
+                        this.registrationForm.verificationCode = ''
                         this.$message.error(res.msg)
                     }
                     console.log(res)
                 } else {   //校验不通过
+                    this.registrationForm.randomCode = ''
+                    this.registrationForm.verificationCode = ''
+                    this.$message.error("参数校验不通过")
                     return false;
                 }
             });
         },
         cancelForm() {
-            this.registrationForm.sex = ''
+            this.registrationForm.sex = '未知'
             this.registrationForm.password = ''
-            this.registrationForm.name = ''
             this.registrationForm.avatar = ''
-            this.registrationForm.studentId = ''
-            this.registrationForm.phone = ''
             this.registrationForm.username = ''
             this.loginForm.password = ''
             this.loginForm.username = ''
@@ -409,7 +411,7 @@ export default {
 
                     if (window.location.search) {
                         const service = window.location.search.split("?service=")[1]
-                        const res = await login302(data,service)
+                        const res = await login302(data, service)
                         if (String(res.code) === '1') {
                             //正常登录
                             localStorage.setItem('userInfo', JSON.stringify(res.data))
@@ -418,15 +420,14 @@ export default {
                             // Cookies.set('tgc',res.data.tgc)
                             router.push({name: 'userinfo'})
 
-                        } else if (String(res.code)==='302'){
+                        } else if (String(res.code) === '302') {
                             //需要重定向
-                            window.location.href = res.data.service + '?ticket='+res.data.st;
-                        }
-                        else {
+                            window.location.href = res.data.service + '?ticket=' + res.data.st;
+                        } else {
                             this.$message.error(res.msg)
                             this.loading = false
                         }
-                    }else {
+                    } else {
                         const res = await login(data)
                         if (String(res.code) === '1') {
                             //正常登录
@@ -436,21 +437,60 @@ export default {
                             // Cookies.set('tgc',res.data.tgc)
                             router.push({name: 'userinfo'})
 
-                        } else if (String(res.code)==='302'){
+                        } else if (String(res.code) === '302') {
                             //需要重定向
-                            window.location.href = res.data.service + '?ticket='+res.data.st;
-                        }
-                        else {
+                            window.location.href = res.data.service + '?ticket=' + res.data.st;
+                        } else {
                             this.$message.error(res.msg)
                             this.loading = false
                         }
                     }
-
-
-
-
                 }
             })
+        },
+        verifySuccess(data){
+            let that = this
+            console.log(data)
+            this.registrationForm.randomCode = data.nonceStr
+            this.registrationForm.verificationCode = data.value
+            setTimeout(function () {
+                that.openVerify = false;
+                console.log('验证，码已关闭...')
+                that.ReCommit()
+            }, 1000);
+        },
+        async getEmailCode() {
+            this.getEmailCodeStatus = true
+            const TIME_COUNT = 60;
+            if (!this.timer) {
+                this.count = TIME_COUNT;
+                this.show = false;
+                this.timer = setInterval(() => {
+                    if (this.count > 0 && this.count <= TIME_COUNT) {
+                        this.count -= 1;
+                    } else {
+                        this.show = true;
+                        clearInterval(this.timer);
+                        this.getEmailCodeStatus = false
+                        this.timer = null;
+                    }
+                }, 1000);
+            }
+            if (!this.registrationForm.email){
+                this.$message.error("请先填写email")
+            }
+            const res = await getEmail({"email":this.registrationForm.email})
+            if (String(res.code)==='1'){
+                this.$message.success(res.msg)
+                setTimeout(function () {
+                    this.getEmailCodeStatus = false
+                }, 60000);
+            }else {
+                this.$message.error(res.msg)
+                this.getEmailCodeStatus = false
+            }
+
+
         },
     }
 }
@@ -470,7 +510,6 @@ export default {
 .logins .el-form {
     margin-top: 3rem;
     width: 214px;
-    height: 307px;
 }
 
 .logins .el-form-item {

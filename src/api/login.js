@@ -26,25 +26,20 @@ export function createUser(data){
     });
 }
 
-export function emailWithUser(data){
-    return request({
-        url:'/user/emailwithuser',
-        method:'post',
-        data:data
-    });
-}
-export function createEmailCode(data){
-    return request({
-        url:'/user/createemailcode',
-        method:'post',
-        data:data
-    });
-}
+
+
 
 
 export function addUser(data){
     return request({
         url:'/user/add',
+        method:'post',
+        data:data
+    });
+}
+export function registerUser(data){
+    return request({
+        url:'/user/register',
         method:'post',
         data:data
     });

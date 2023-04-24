@@ -2,14 +2,16 @@
     <MainNavFrame>
         <router-view/>
     </MainNavFrame>
+
 </template>
 
 <script>
 import MainNavFrame from "@/components/MainNavFrame.vue";
 
+
 export default {
     name: 'index',
-    components: {MainNavFrame},
+    components: { MainNavFrame},
     data() {
         return {};
     },

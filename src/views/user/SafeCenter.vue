@@ -103,6 +103,7 @@
 <script>
 
 import router from "@/router";
+import {emailWithUser, getEmail} from "@/api/email";
 
 
 
@@ -168,7 +169,7 @@ export default {
             router.push({name: 'changepassword'})
         },
         async onSubmit() {
-            const data =" await Api.emailWithUser({email: this.emailform.email, code: this.emailform.code});"
+            const data =await emailWithUser({email: this.emailform.email, code: this.emailform.code});
             if (String(data.code) === '1') {
                 this.$message.success(data.msg);
             } else {
@@ -176,7 +177,7 @@ export default {
             }
         },
         async getCode() {
-            const data = "await Api.createEmailCode({email: this.emailform.email});"
+            const data = await getEmail({email: this.emailform.email});
             if (String(data.code) === '1') {
                 this.$message.success(data.msg);
             } else {
