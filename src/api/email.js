@@ -13,6 +13,6 @@ export function emailWithUser(data){
     return request({
         url:'/user/emailwithuser',
         method:'post',
-        data:data
+        data
     });
 }

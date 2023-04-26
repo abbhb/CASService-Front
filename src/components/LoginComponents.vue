@@ -7,7 +7,7 @@
                             v-model="loginForm.username"
                             type="text"
                             auto-complete="off"
-                            placeholder="账号"
+                            placeholder="账号(用户名、电子邮箱)"
                             maxlength="40"
                             prefix-icon="el-icon-user"/>
                 </el-form-item>
@@ -52,17 +52,17 @@
                 <el-form-item prop="password">
                     <el-input v-model="registrationForm.password" type="password" show-password placeholder="密码"
                               prefix-icon="el-icon-lock" maxlength="20"
-                              />
+                    />
                 </el-form-item>
                 <el-form-item prop="rePassword">
                     <el-input v-model="registrationForm.rePassword" type="password" show-password placeholder="确认密码"
                               prefix-icon="el-icon-lock" maxlength="20"
-                              />
+                    />
                 </el-form-item>
                 <el-form-item prop="inviteCode">
                     <el-input v-model="registrationForm.inviteCode" show-password placeholder="邀请码"
                               prefix-icon="el-icon-magic-stick" maxlength="20"
-                              />
+                    />
                 </el-form-item>
 
                 <el-form-item prop="email">
@@ -78,7 +78,7 @@
                         <el-button :disabled="getEmailCodeStatus" class="" size="medium" type="primary"
                                    @click.native.prevent="getEmailCode">
                             <span v-if="!getEmailCodeStatus">获取</span>
-                            <span v-else>{{count}}s</span>
+                            <span v-else>{{ count }}s</span>
 
                         </el-button>
                     </div>
@@ -104,14 +104,14 @@
                 </el-form-item>
             </el-form>
             <el-dialog
-                title="验证码校验"
-                :visible.sync="openVerify"
-                width="25rem"
-                :show-close="false"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :append-to-body="true"
-                style="z-index: 2100">
+                    title="验证码校验"
+                    :visible.sync="openVerify"
+                    width="25rem"
+                    :show-close="false"
+                    :close-on-click-modal="false"
+                    :close-on-press-escape="false"
+                    :append-to-body="true"
+                    style="z-index: 2100">
                 <sliderVerify ref="sliderVerify" @success="verifySuccess"/>
             </el-dialog>
         </div>
@@ -151,15 +151,15 @@ export default {
                 email: '',
                 mailCode: '',
                 inviteCode: '',//邀请码
-                randomCode:'',
+                randomCode: '',
                 verificationCode: '',//验证码
             },
             loading: false,
             isRegistration: false,//默认是登录
-            openVerify:false,
-            getEmailCodeStatus:false,
-            count:60,//电子邮件倒计时
-            timer:null,//电子邮件倒计时
+            openVerify: false,
+            getEmailCodeStatus: false,
+            count: 60,//电子邮件倒计时
+            timer: null,//电子邮件倒计时
 
         }
     },
@@ -254,6 +254,12 @@ export default {
             } else if (String(res.code) === '302') {
                 //需要重定向
                 window.location.href = res.data.service + '?ticket=' + res.data.st;
+            } else if (String(res.code) === '308') {
+                //必须补全信息
+                localStorage.setItem('userInfo', JSON.stringify(res.data))
+                localStorage.setItem("permission", res.data.permission)
+                localStorage.setItem('userId', String(res.data.id))
+                router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
             }
         } else {
             const res = await loginbytgc()
@@ -268,6 +274,12 @@ export default {
             } else if (String(res.code) === '302') {
                 //需要重定向
                 window.location.href = res.data.service + '?ticket=' + res.data.st;
+            } else if (String(res.code) === '308') {
+                //必须补全信息
+                localStorage.setItem('userInfo', JSON.stringify(res.data))
+                localStorage.setItem("permission", res.data.permission)
+                localStorage.setItem('userId', String(res.data.id))
+                router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
             }
         }
 
@@ -305,14 +317,14 @@ export default {
             return loading;
         },
         ButtonRe() {
-            if (this.registrationForm.verificationCode===''||this.registrationForm.randomCode===''){
+            if (this.registrationForm.verificationCode === '' || this.registrationForm.randomCode === '') {
                 this.openVerify = true
                 this.$refs.sliderVerify.init()
             } else {
                 this.ReCommit()
             }
         },
-        ReCommit(){
+        ReCommit() {
             this.$refs["registrationForm"].validate(async (valid) => {  //开启校验
                 if (valid) {   // 如果校验通过，请求接口，允许提交表单
                     let data = {}
@@ -324,7 +336,7 @@ export default {
                         this.$message.error("请你输入完整")
                         return false;
                     }
-                    if (!(this.registrationForm.password===this.registrationForm.rePassword)){
+                    if (!(this.registrationForm.password === this.registrationForm.rePassword)) {
                         this.$message.error("确认密码需要和密码一致")
                     }
                     if (!this.registrationForm.status) {
@@ -339,19 +351,19 @@ export default {
                         this.$message.error("不可在用户名中包含'@'")
                         return false;
                     }
-                    if (!this.registrationForm.verificationCode){
+                    if (!this.registrationForm.verificationCode) {
                         this.$message.error("验证码问题")
                         return false;
                     }
-                    if (!this.registrationForm.randomCode){
+                    if (!this.registrationForm.randomCode) {
                         this.$message.error("验证码问题")
                         return false;
                     }
-                    if (!this.registrationForm.inviteCode){
+                    if (!this.registrationForm.inviteCode) {
                         this.$message.error("验证码问题")
                         return false;
                     }
-                    if (!this.registrationForm.mailCode){
+                    if (!this.registrationForm.mailCode) {
                         this.$message.error("验证码问题")
                         return false;
                     }
@@ -423,6 +435,12 @@ export default {
                         } else if (String(res.code) === '302') {
                             //需要重定向
                             window.location.href = res.data.service + '?ticket=' + res.data.st;
+                        } else if (String(res.code) === '308') {
+                            //必须补全信息
+                            localStorage.setItem('userInfo', JSON.stringify(res.data))
+                            localStorage.setItem("permission", res.data.permission)
+                            localStorage.setItem('userId', String(res.data.id))
+                            router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
                         } else {
                             this.$message.error(res.msg)
                             this.loading = false
@@ -440,6 +458,12 @@ export default {
                         } else if (String(res.code) === '302') {
                             //需要重定向
                             window.location.href = res.data.service + '?ticket=' + res.data.st;
+                        } else if (String(res.code) === '308') {
+                            //必须补全信息
+                            localStorage.setItem('userInfo', JSON.stringify(res.data))
+                            localStorage.setItem("permission", res.data.permission)
+                            localStorage.setItem('userId', String(res.data.id))
+                            router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
                         } else {
                             this.$message.error(res.msg)
                             this.loading = false
@@ -448,7 +472,7 @@ export default {
                 }
             })
         },
-        verifySuccess(data){
+        verifySuccess(data) {
             let that = this
             console.log(data)
             this.registrationForm.randomCode = data.nonceStr
@@ -476,16 +500,16 @@ export default {
                     }
                 }, 1000);
             }
-            if (!this.registrationForm.email){
+            if (!this.registrationForm.email) {
                 this.$message.error("请先填写email")
             }
-            const res = await getEmail({"email":this.registrationForm.email})
-            if (String(res.code)==='1'){
+            const res = await getEmail({"email": this.registrationForm.email})
+            if (String(res.code) === '1') {
                 this.$message.success(res.msg)
                 setTimeout(function () {
                     this.getEmailCodeStatus = false
                 }, 60000);
-            }else {
+            } else {
                 this.$message.error(res.msg)
                 this.getEmailCodeStatus = false
             }

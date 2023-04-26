@@ -9,6 +9,7 @@ import safeCenter from "@/views/user/SafeCenter.vue";
 import en from "@/views/redirect/en.vue";
 import gitee from "@/views/redirect/gitee.vue";
 import InviteCode from "@/views/admin/invitecode/InviteCode.vue";
+import findPassword from "@/views/user/FindPassword.vue";
 export default [
 	{
 		path: '/',
@@ -50,6 +51,15 @@ export default [
 		path: '/redirect-gitee',
 		name: 'redirect-gitee',
 		component: gitee,
+		meta:{
+			requireAuth: false,
+			needrole:false
+		}
+	},
+	{
+		path: '/findPassword',
+		name: 'findPassword',
+		component: findPassword,
 		meta:{
 			requireAuth: false,
 			needrole:false

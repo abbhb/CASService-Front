@@ -1,33 +1,6 @@
 <template>
     <div class="home">
-        <header class="header">
-            <div class="left" @click="menuCollapse = !menuCollapse;">
-
-<!--                <div class="style-logo-NxwZ7">-->
-<!--                    -->
-<!--                </div>-->
-                <span style="color: #000000;font-size: 32px;font-weight: 900;">CAS 认证服务</span>
-<!--                <span>服务平台</span>-->
-                <div class="version">@Version:{{ Version }}</div>
-            </div>
-            <div class="right" style="display: flex;flex-direction: row;align-items: center;">
-                <div style="margin-right: 30px;font-size: 12px;color: rgba(255,255,255,0.78)">
-                    <el-link @click.native="setIsNeedZoom">显示异常?点击修复视图</el-link>
-                </div>
-                <div class="warp" style="margin-right: auto;">
-                    <el-dropdown>
-                <span class="el-dropdown-link">
-                    <el-avatar shape="circle" :size="40" :src="userphoto"/>
-                </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item >{{ name }}</el-dropdown-item>
-                            <el-dropdown-item @click.native="changeLogin">切换账号</el-dropdown-item>
-                            <el-dropdown-item @click.native="onLogOut">退出登录</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                </div>
-            </div>
-        </header>
+        <MainTopNav @menuCollapseChange="menuCollapseChange"></MainTopNav>
         <section class="section">
             <div class="tac">
                 <div class="col1">
@@ -63,7 +36,9 @@
                                     <!--                  {{ item1.optionName }}-->
                                     <template slot="title">
                                         <i :class="item1.iconClassName"></i>
-                                        <span slot="title">{{ !menuCollapse ? item1.optionName : item1.optionName }}</span>
+                                        <span slot="title">{{
+                                            !menuCollapse ? item1.optionName : item1.optionName
+                                            }}</span>
                                     </template>
                                 </el-menu-item>
                             </el-submenu>
@@ -106,11 +81,12 @@
 <script>
 
 import {menuData} from "@/views/mencCofig";
-import * as Api from "@/api/login";
+import MainTopNav from "@/components/MainTopNav.vue";
 
 
 export default {
     name: "MainNavFrame",
+    components: {MainTopNav},
     data() {
         return {
             // 菜单配置
@@ -118,37 +94,13 @@ export default {
             menuCollapse: false, //是否水平折叠收起菜单
             defaultUnfoldedMenu: '1', // 默认展开第一项
             tags: [],
-            userphoto: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-            showPhotoMenu: false,
-            name: '11',
             userInfo: {},
-            screenWidth: document.body.clientWidth,
-            Version: this.$globl.Version,
-            changeUser: false,//切换用户
-            bigLogo:true,
+
         };
     },
-    watch: {
-        screenWidth(newVal) {
-            console.log('newVal', newVal);
-            if (newVal <= 1000) {
-                this.menuCollapse = true;
-                this.bigLogo = false;
-            } else {
-                this.menuCollapse = false;
-                this.bigLogo = true;
-            }
 
-        }
-
-    },
     created() {
 
-        const that = this;
-        window.onresize = () => {
-            window.screenWidth = document.body.clientWidth;
-            that.screenWidth = window.screenWidth;
-        };
 
         this.defaultUnfoldedMenu = [
             localStorage.getItem("defaultUnfoldedMenu")
@@ -160,12 +112,9 @@ export default {
         }
         this.getMenuData()
 
-        this.name = this.userInfo.name;
-        this.userphoto = this.userInfo.avatar;
 
     },
     methods: {
-
         // 收取菜单按钮
         onMenuCollapse() {
             this.defaultUnfoldedMenu = [
@@ -179,6 +128,9 @@ export default {
         handleOpen(key, keyPath) {
             console.log(key, keyPath);
             localStorage.setItem("defaultUnfoldedMenu", "" + key);
+        },
+        menuCollapseChange(data) {
+            this.menuCollapse = data
         },
         // 菜单收取
         handleClose(key, keyPath) {
@@ -252,28 +204,7 @@ export default {
                 }
             });
         },
-        setIsNeedZoom() {
-            this.$globl.isNeedZoom = true;
-            document.body.style.zoom = 0.9
-        },
-        changeLogin() {
-            this.changeUser = true;
-        },
-        async onLogOut() {
-            const data = await Api.logoutApi()
-            console.log(data)
 
-            if (String(data.code) === '900') {
-                this.$message.success(data.msg);
-                sessionStorage.clear();
-                localStorage.clear();
-                this.$router.push("login");
-            } else if (data.status === 701) {
-                this.$message.error(data.msg);
-
-            }
-
-        },
     }
 }
 </script>
@@ -287,40 +218,12 @@ export default {
   display: flex;
   flex-direction: column;
 
-  .header {
-    background-color: #ffffff;
-    height: 40px;
-    padding: 8px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .left {
-      display: flex;
-        flex-direction: row;
-      align-items: center;
-      white-space: nowrap;
-      color: RGB(29, 33, 41);
-      font-weight: 600;
-      font-size: 20px;
-      text-overflow: ellipsis;
-      font-family: 'system-ui';
-
-    }
-
-    .right {
-
-      .warp {
-        //margin-right: 0px;
-
-      }
-    }
-  }
 
   .section {
     flex: 1;
     box-sizing: border-box;
     overflow: auto;
+
 
     .tac {
       flex: 1;
@@ -336,7 +239,7 @@ export default {
 
       .col2 {
         flex: 1;
-        background-color: #f2f3f5;
+        background: #f9fbff;
         padding: 0 15px 15px 15px;
         border-radius: 5px;
         margin-right: 5px;
@@ -348,7 +251,7 @@ export default {
           height: 3rem;
           overflow: hidden;
           //border-bottom: 1px solid rgba(238, 238, 238, 0.24);
-          background-color: #f2f3f5;
+          background: #f9fbff;
           padding: 1rem;
           display: flex;
           align-items: center;
@@ -375,7 +278,6 @@ export default {
           -ms-flex-direction: column;
           /*布局方向是垂直的*/
           flex-direction: column;
-
         }
       }
     }
@@ -398,34 +300,29 @@ export default {
 .el-icon-arrow-down {
   font-size: 12px;
 }
-@media screen and (min-width:1000px){
-    .style-logo-NxwZ7 {
-        display: inline-flex;
-        width: 148px;
-        height: 60px;
-        margin-right: 7rem;
-        border-radius: 2px;
-    }
 
-}
-@media screen and (max-width:1000px){
-    .style-logo-NxwZ7 {
-        display: inline-flex;
-        width: 36px;
-        height: 36px;
-        margin-right: 7rem;
-        border-radius: 2px;
-    }
+@media screen and (min-width: 1000px) {
+  .style-logo-NxwZ7 {
+    display: inline-flex;
+    width: 148px;
+    height: 60px;
+    margin-right: 7rem;
+    border-radius: 2px;
+  }
 
 }
 
-.version {
-  font-family: 'MS Reference Sans Serif';
-  font-size: 12px;
-  font-weight: 200;
-  justify-content: end;
-  align-self: end;
+@media screen and (max-width: 1000px) {
+  .style-logo-NxwZ7 {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    margin-right: 7rem;
+    border-radius: 2px;
+  }
+
 }
+
 
 //点击后样式
 .el-menu-item.is-active {
