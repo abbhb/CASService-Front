@@ -18,7 +18,7 @@ export function inject(service) {
     service.interceptors.response.use(
         (response) => {
             console.log(response)
-            switch (response.data.status) {
+            switch (response.data.code) {
                 case 900:
                     //可能是票过期，清除它
                     sessionStorage.clear()
@@ -88,6 +88,19 @@ export function inject(service) {
                 case 504: error.message = '网络超时(504)';
                     break;
                 case 505: error.message = 'HTTP版本不受支持(505)';
+                    break;
+            }
+
+            switch (error.response.data.code) {
+                case 900:
+                    error.message = '未授权，请重新登录(900)';
+                    sessionStorage.clear()
+                    localStorage.clear()
+                    router.replace({ //跳转到登录页面
+                        path: '/login',
+                        // 将跳转的路由path作为参数，登录成功后跳转到该路由
+                        query: { redirect: router.currentRoute.fullPath }
+                    });
                     break;
             }
 
