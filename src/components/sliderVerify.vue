@@ -42,6 +42,27 @@
 </template>
 
 <script>
+
+/**
+ * 食用方法：
+ * @success=verifySuccess（data）
+ * data.nonceStr为随机码
+ * data.value为验证码
+ *               打开前  this.$refs.sliderVerify.init()
+ *
+ * 例：
+ * <el-dialog
+ *                     title="验证码校验"
+ *                     :visible.sync="openVerify"
+ *                     width="25rem"
+ *                     :show-close="false"
+ *                     :close-on-click-modal="false"
+ *                     :close-on-press-escape="false"
+ *                     :append-to-body="true"
+ *                     style="z-index: 2100">
+ *                 <sliderVerify ref="sliderVerify" @success="verifySuccess"/>
+ *             </el-dialog>
+ */
 import {checkImageCode, getCodeImg} from "@/api/captcha";
 
 function sum(x, y) {

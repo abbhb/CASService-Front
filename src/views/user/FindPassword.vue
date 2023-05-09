@@ -29,7 +29,10 @@
                 <div class="container-inner" v-else-if="currentStep===2">
                     <div>
                         <div>
-                            <div>验证码已经发送到邮箱<span style="font-weight: 600;font-size: 15px;">{{email}}</span></div>
+                            <div>验证码已经发送到邮箱
+                                <span style="font-weight: 600;font-size: 15px;">{{email}}</span>
+                                <span style="font-weight: 200;font-size: 8px;color: #2b8dfd" @click="gotoEamil()">去查看</span>
+                            </div>
                             <el-input
                                 placeholder="验证码"
                                 v-model="code"
@@ -60,10 +63,23 @@ export default {
     components: {MainTopNav},
     data(){
         return{
-            email:'',
-            currentStep:2,//当前处于第几步
+            email:'test@163.com',
+            currentStep:1,//当前处于第几步
             code:'',//验证码
         }
+    },
+    methods:{
+        gotoEamil(){
+            window.open('https://mail.'+this.email.split('@')[1])
+        },
+        Next(){
+            if (this.currentStep===1){
+                //调用随机验证码，成功后允许下一步
+
+                //调用获取邮箱验证码api
+                return
+            }
+        },
     }
 }
 </script>

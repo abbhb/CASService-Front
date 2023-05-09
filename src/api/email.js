@@ -1,11 +1,11 @@
 import request from "@/http/request";
 
 
-export function getEmail(params) {
+export function getEmail(data) {
     return request({
-        url:'/common/getCode',
-        method:'get',
-        params:params
+        url:'/common/getEmailCode',
+        method:'post',
+        data
     })
 }
 

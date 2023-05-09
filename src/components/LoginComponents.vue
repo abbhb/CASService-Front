@@ -129,6 +129,7 @@ import {login, login302, loginbytgc, loginbytgc302} from "@/api/auth";
 import {hasUserName, registerUser} from "@/api/login";
 import SliderVerify from "@/components/sliderVerify.vue";
 import {getEmail} from "@/api/email";
+import {getIfNeedCaptcha} from "@/api/common";
 
 
 export default {
@@ -151,8 +152,6 @@ export default {
                 email: '',
                 mailCode: '',
                 inviteCode: '',//邀请码
-                randomCode: '',
-                verificationCode: '',//验证码
             },
             loading: false,
             isRegistration: false,//默认是登录
@@ -160,7 +159,10 @@ export default {
             getEmailCodeStatus: false,
             count: 60,//电子邮件倒计时
             timer: null,//电子邮件倒计时
-
+            VCode:{//验证码
+                randomCode: '',
+                verificationCode: '',
+            },
         }
     },
     computed: {
@@ -289,22 +291,6 @@ export default {
             this.$message.info("这个服务暂时停用，努力适配中")
             console.log(val)
             return
-            // if (val === 'oauthen') {
-            //
-            //     this.openLoading()
-            //
-            //     if (window.location.href.indexOf('10.15.247.254') !== -1) {
-            //
-            //         window.location.href = 'http://10.15.247.254/en/oauth/authorize/?client_id=WFIko9MEhg1BuOFDRlnGc4JvxEnhi48e2F9cr8Ud&response_type=code'
-            //     } else if (window.location.href.indexOf('vpn') !== -1) {
-            //         window.location.href = 'https://webvpn.beihua.edu.cn/http/77726476706e69737468656265737421a1a70fcd727e3a042946dbf9cc/en/oauth/authorize/?client_id=WFIko9MEhg1BuOFDRlnGc4JvxEnhi48e2F9cr8Ud&response_type=code'
-            //     } else if (window.location.href.indexOf('192.168') !== -1) {
-            //         window.location.href = 'http://10.15.247.254/en/oauth/authorize/?client_id=WFIko9MEhg1BuOFDRlnGc4JvxEnhi48e2F9cr8Ud&response_type=code'
-            //     } else {
-            //         window.location.href = 'http://10.15.247.254/en/oauth/authorize/?client_id=WFIko9MEhg1BuOFDRlnGc4JvxEnhi48e2F9cr8Ud&response_type=code'
-            //     }
-            //
-            // }
         },
         openLoading() {
             const loading = this.$loading({
@@ -317,12 +303,8 @@ export default {
             return loading;
         },
         ButtonRe() {
-            if (this.registrationForm.verificationCode === '' || this.registrationForm.randomCode === '') {
-                this.openVerify = true
-                this.$refs.sliderVerify.init()
-            } else {
-                this.ReCommit()
-            }
+
+            this.ReCommit()
         },
         ReCommit() {
             this.$refs["registrationForm"].validate(async (valid) => {  //开启校验
@@ -351,14 +333,6 @@ export default {
                         this.$message.error("不可在用户名中包含'@'")
                         return false;
                     }
-                    if (!this.registrationForm.verificationCode) {
-                        this.$message.error("验证码问题")
-                        return false;
-                    }
-                    if (!this.registrationForm.randomCode) {
-                        this.$message.error("验证码问题")
-                        return false;
-                    }
                     if (!this.registrationForm.inviteCode) {
                         this.$message.error("验证码问题")
                         return false;
@@ -377,27 +351,24 @@ export default {
                     data.rePassword = this.registrationForm.rePassword
                     data.mailCode = this.registrationForm.mailCode
                     data.inviteCode = this.registrationForm.inviteCode
-                    data.randomCode = this.registrationForm.randomCode
-                    data.verificationCode = this.registrationForm.verificationCode
                     const res = await registerUser(data)
                     if (String(res.code) === '1') {
                         this.$message.success(res.msg)
                         this.handleLo()
                     } else {
-                        this.registrationForm.randomCode = ''
-                        this.registrationForm.verificationCode = ''
                         this.$message.error(res.msg)
                     }
                     console.log(res)
                 } else {   //校验不通过
-                    this.registrationForm.randomCode = ''
-                    this.registrationForm.verificationCode = ''
+
                     this.$message.error("参数校验不通过")
                     return false;
                 }
             });
         },
         cancelForm() {
+            this.VCode.randomCode = ''
+            this.VCode.verificationCode = ''
             this.registrationForm.sex = '未知'
             this.registrationForm.password = ''
             this.registrationForm.avatar = ''
@@ -475,12 +446,13 @@ export default {
         verifySuccess(data) {
             let that = this
             console.log(data)
-            this.registrationForm.randomCode = data.nonceStr
-            this.registrationForm.verificationCode = data.value
-            setTimeout(function () {
+            this.VCode.randomCode = data.nonceStr
+            this.VCode.verificationCode = data.value
+            setTimeout(async function () {
                 that.openVerify = false;
                 console.log('验证，码已关闭...')
-                that.ReCommit()
+                await that.TGetEmailCode()
+
             }, 1000);
         },
         async getEmailCode() {
@@ -503,19 +475,53 @@ export default {
             if (!this.registrationForm.email) {
                 this.$message.error("请先填写email")
             }
-            const res = await getEmail({"email": this.registrationForm.email})
-            if (String(res.code) === '1') {
-                this.$message.success(res.msg)
-                setTimeout(function () {
-                    this.getEmailCodeStatus = false
-                }, 60000);
-            } else {
-                this.$message.error(res.msg)
-                this.getEmailCodeStatus = false
+
+            const rres = await getIfNeedCaptcha()
+            if (String(rres.code)==='1'){
+                if (rres.data===1){
+                    this.openVerify = true
+                    this.$refs.sliderVerify.init()
+                }else {
+                    await this.TGetEmailCode()
+                }
+            }else {
+                this.$message.error(rres.msg)
             }
 
-
         },
+         async TGetEmailCode() {
+             let data = {
+                 "email": this.registrationForm.email,
+                 "randomCode": this.VCode.randomCode,
+                 "verificationCode": this.VCode.verificationCode
+             }
+             const res = await getEmail(data)
+             if (String(res.code) === '1') {
+                 this.$message.success(res.msg)
+                 this.VCode.randomCode = ''
+                 this.VCode.verificationCode = ''
+                 this.getEmailCodeStatus = true
+                 const TIME_COUNT = 60;
+                 if (!this.timer) {
+                     this.count = TIME_COUNT;
+                     this.show = false;
+                     this.timer = setInterval(() => {
+                         if (this.count > 0 && this.count <= TIME_COUNT) {
+                             this.count -= 1;
+                         } else {
+                             this.show = true;
+                             clearInterval(this.timer);
+                             this.getEmailCodeStatus = false
+                             this.timer = null;
+                         }
+                     }, 1000);
+                 }
+
+             } else {
+                 this.$message.error(res.msg)
+                 this.getEmailCodeStatus = false
+             }
+         },
     }
 }
 </script>

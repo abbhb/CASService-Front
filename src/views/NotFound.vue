@@ -3,7 +3,7 @@
         <div class="bodybody">
             <div class="notfound">
                 <div>
-                    <el-image class="img" src="./images/failed.png"></el-image>
+                    <el-image class="img" :src="require('@/assets/failed.png')"></el-image>
                 </div>
 
                 <div class="content">

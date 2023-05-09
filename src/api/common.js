@@ -10,3 +10,10 @@ export function getImage(id) {
         }
     })
 }
+
+export function getIfNeedCaptcha() {
+    return request({
+        url:'/common/getIfNeedCaptcha',
+        method:'get'
+    })
+}
