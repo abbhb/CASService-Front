@@ -86,12 +86,8 @@
                         <div style="display: flex;flex-direction: row;">
                             <el-input v-model="emailform.originCode" id="inputValue" type="text"
                                       placeholder="请输入原邮箱验证码"/>
-                            <el-button :disabled="getEmailCodeStatus1" type="primary"
-                                       @click="getCode(emailform.originEmail,1)"
-                                       style="margin-left: 1rem;">
-                                <span v-if="!getEmailCodeStatus1">获取</span>
-                                <span v-else>{{ count1 }}s</span>
-                            </el-button>
+                            <EmailButton :email="emailform.originEmail"></EmailButton>
+
                         </div>
 
                     </el-form-item>
@@ -102,11 +98,8 @@
                         <div style="display: flex;flex-direction: row;">
                             <el-input v-model="emailform.newCode" id="inputValue" type="text"
                                       placeholder="请输入新邮箱验证码"/>
-                            <el-button :disabled="getEmailCodeStatus2" type="primary"
-                                       @click="getCode(emailform.newEmail,2)" style="margin-left: 1rem;">
-                                <span v-if="!getEmailCodeStatus2">获取</span>
-                                <span v-else>{{ count2 }}s</span>
-                            </el-button>
+                            <EmailButton :email="emailform.newEmail"></EmailButton>
+
                         </div>
 
                     </el-form-item>
@@ -125,10 +118,12 @@
 
 import router from "@/router";
 import {emailWithUser, getEmail} from "@/api/email";
+import EmailButton from "@/components/EmailButton.vue";
 
 
 export default {
     name: "SafeCenter",
+    components: {EmailButton},
     data() {
         return {
             msgText: "",

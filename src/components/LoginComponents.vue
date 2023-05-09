@@ -75,12 +75,7 @@
                         <el-input v-model="registrationForm.mailCode" placeholder="请输入邮箱验证码"
                                   prefix-icon="el-icon-magic-stick"
                         />
-                        <el-button :disabled="getEmailCodeStatus" class="" size="medium" type="primary"
-                                   @click.native.prevent="getEmailCode">
-                            <span v-if="!getEmailCodeStatus">获取</span>
-                            <span v-else>{{ count }}s</span>
-
-                        </el-button>
+                        <EmailButton :email="registrationForm.email"></EmailButton>
                     </div>
                 </el-form-item>
 
@@ -128,13 +123,12 @@ import router from "@/router";
 import {login, login302, loginbytgc, loginbytgc302} from "@/api/auth";
 import {hasUserName, registerUser} from "@/api/login";
 import SliderVerify from "@/components/sliderVerify.vue";
-import {getEmail} from "@/api/email";
-import {getIfNeedCaptcha} from "@/api/common";
+import EmailButton from "@/components/EmailButton.vue";
 
 
 export default {
     name: "LoginComponents",
-    components: {SliderVerify},
+    components: {EmailButton, SliderVerify},
     data() {
         return {
             loginForm: {
@@ -155,14 +149,6 @@ export default {
             },
             loading: false,
             isRegistration: false,//默认是登录
-            openVerify: false,
-            getEmailCodeStatus: false,
-            count: 60,//电子邮件倒计时
-            timer: null,//电子邮件倒计时
-            VCode:{//验证码
-                randomCode: '',
-                verificationCode: '',
-            },
         }
     },
     computed: {
@@ -443,85 +429,6 @@ export default {
                 }
             })
         },
-        verifySuccess(data) {
-            let that = this
-            console.log(data)
-            this.VCode.randomCode = data.nonceStr
-            this.VCode.verificationCode = data.value
-            setTimeout(async function () {
-                that.openVerify = false;
-                console.log('验证，码已关闭...')
-                await that.TGetEmailCode()
-
-            }, 1000);
-        },
-        async getEmailCode() {
-            this.getEmailCodeStatus = true
-            const TIME_COUNT = 60;
-            if (!this.timer) {
-                this.count = TIME_COUNT;
-                this.show = false;
-                this.timer = setInterval(() => {
-                    if (this.count > 0 && this.count <= TIME_COUNT) {
-                        this.count -= 1;
-                    } else {
-                        this.show = true;
-                        clearInterval(this.timer);
-                        this.getEmailCodeStatus = false
-                        this.timer = null;
-                    }
-                }, 1000);
-            }
-            if (!this.registrationForm.email) {
-                this.$message.error("请先填写email")
-            }
-
-            const rres = await getIfNeedCaptcha()
-            if (String(rres.code)==='1'){
-                if (rres.data===1){
-                    this.openVerify = true
-                    this.$refs.sliderVerify.init()
-                }else {
-                    await this.TGetEmailCode()
-                }
-            }else {
-                this.$message.error(rres.msg)
-            }
-
-        },
-         async TGetEmailCode() {
-             let data = {
-                 "email": this.registrationForm.email,
-                 "randomCode": this.VCode.randomCode,
-                 "verificationCode": this.VCode.verificationCode
-             }
-             const res = await getEmail(data)
-             if (String(res.code) === '1') {
-                 this.$message.success(res.msg)
-                 this.VCode.randomCode = ''
-                 this.VCode.verificationCode = ''
-                 this.getEmailCodeStatus = true
-                 const TIME_COUNT = 60;
-                 if (!this.timer) {
-                     this.count = TIME_COUNT;
-                     this.show = false;
-                     this.timer = setInterval(() => {
-                         if (this.count > 0 && this.count <= TIME_COUNT) {
-                             this.count -= 1;
-                         } else {
-                             this.show = true;
-                             clearInterval(this.timer);
-                             this.getEmailCodeStatus = false
-                             this.timer = null;
-                         }
-                     }, 1000);
-                 }
-
-             } else {
-                 this.$message.error(res.msg)
-                 this.getEmailCodeStatus = false
-             }
-         },
     }
 }
 </script>
