@@ -10,7 +10,7 @@
     >
         <img
                 v-if="avatar"
-                :src="avatar"
+                :src="Urkl"
                 class="avatar"
         />
         <i v-else class="el-icon-upload add"></i>
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import {getImage} from "@/api/common";
+
 export default {
     name: "MyElUploadImage",
     props: {
@@ -28,18 +30,46 @@ export default {
     },
     data() {
         return {
-
+            Urkl:require('@/assets/image.jpg'),
             isimageupload: false,//图片是否再上传
         }
     },
-    created() {
+    watch:{
+        async 'avatar'(newa, olds) {
+            console.log(olds)
+            const data = await this.handelAvatar(newa)
+            console.log(data)
 
+            if (data !== '') {
+                this.Urkl = data
+            }
+        }
+    },
+    async created() {
+        const data = await this.handelAvatar(this.avatar)
+        console.log(data)
+
+        if (data !== '') {
+            this.Urkl = data
+        }
     },
     methods: {
+         async handelAvatar(q) {
+             if (!q.includes("http")) {
+                 const res = await getImage(q)
+                 if (String(res.code) === '1') {
+                     return String(res.data);
+                 }
+                 console.log(res)
+
+                 return '';
+             }
+             console.log(q)
+             return q;
+         },
         handleAvatarSuccess(res) {
             this.isimageupload = false;
             if (String(res.code) === '1') {
-                this.avatar = String(res.data);
                 this.$emit("update:avatar", String(res.data));
             } else {
                 this.$message.error(res.msg)
