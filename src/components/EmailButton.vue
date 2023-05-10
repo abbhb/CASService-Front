@@ -12,15 +12,13 @@
                 :close-on-press-escape="false"
                 :append-to-body="true"
                 style="z-index: 2100">
-                <sliderVerify :ref="reff" @success="verifySuccess"/>
+                <sliderVerify v-if="sliderVerifyKey" @success="verifySuccess"/>
             </el-dialog>
         </el-button>
 </template>
 
 <script>
-/**
- * 未写完，需要改ref为对外方法 init
- */
+
 import SliderVerify from "@/components/sliderVerify.vue";
 import {getIfNeedCaptcha} from "@/api/common";
 import {getEmail} from "@/api/email";
@@ -35,13 +33,24 @@ export default {
     },
     data(){
         return{
-            reff:'sliderVerify'+Math.ceil(Math.random()*100),
             openVerify: false,
             getEmailCodeStatus: false,
             count: 60,//电子邮件倒计时
             timer: null,//电子邮件倒计时
             randomCode:'',
             verificationCode:'',
+            sliderVerifyKey:true,
+        }
+    },
+    watch:{
+        openVerify(news,olds) {
+            console.log(news)
+            console.log(olds)
+            if (news){
+                this.sliderVerifyKey= true
+            }else {
+                this.sliderVerifyKey= false
+            }
         }
     },
     methods:{
@@ -82,7 +91,6 @@ export default {
             if (String(rres.code)==='1'){
                 if (rres.data===1){
                     this.openVerify = true
-                    this.$refs.reff.init()
                 }else {
                     await this.TGetEmailCode()
                 }

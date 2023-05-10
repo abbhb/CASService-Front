@@ -159,6 +159,7 @@ export default {
             nonceStr: undefined,
         };
     },
+
     mounted() {
         this.init();
     },
