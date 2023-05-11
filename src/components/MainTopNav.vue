@@ -23,7 +23,7 @@
                 </el-dropdown>
                 <div v-else>
                   <span class="el-dropdown-link">
-                        <el-link style="margin-right: 1rem;" type="primary" @click="toLogin">登录</el-link>
+                        <el-link style="margin-right: 1rem;color: #FFFFFF;font-weight: 600;font-size: 18px;" type="primary" @click="toLogin">登录</el-link>
                   </span>
                 </div>
             </div>
@@ -121,7 +121,7 @@ export default {
                 this.$message.success(data.msg);
                 sessionStorage.clear();
                 localStorage.clear();
-                this.$router.push("login");
+                router.push({name:'login'})
             } else {
                 this.$message.error(data.msg);
             }

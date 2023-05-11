@@ -31,8 +31,8 @@
 
                         </el-button>
                     </div>
-                    <div class="goto" @click="goto('oauthen')">
-                        <span>EN-oauth2.0认证(暂时J掉了)></span>
+                    <div class="goto" @click="goto('findPassword')">
+                        <span>找回密码</span>
                     </div>
 
                 </el-form-item>
@@ -262,9 +262,15 @@ export default {
     },
     methods: {
         goto(val) {
-            this.$message.info("这个服务暂时停用，努力适配中")
-            console.log(val)
-            return
+            if (val==='findPassword'){
+                //跳转找回密码
+                router.push({name:'findPassword'})
+            }else {
+                this.$message.info("这个服务暂时停用，努力适配中")
+                console.log(val)
+                return
+            }
+
         },
         openLoading() {
             const loading = this.$loading({
