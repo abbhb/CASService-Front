@@ -98,17 +98,6 @@
 
                 </el-form-item>
             </el-form>
-            <el-dialog
-                    title="验证码校验"
-                    :visible.sync="openVerify"
-                    width="25rem"
-                    :show-close="false"
-                    :close-on-click-modal="false"
-                    :close-on-press-escape="false"
-                    :append-to-body="true"
-                    style="z-index: 2100">
-                <sliderVerify ref="sliderVerify" @success="verifySuccess"/>
-            </el-dialog>
         </div>
     </div>
 
@@ -122,13 +111,12 @@
 import router from "@/router";
 import {login, login302, loginbytgc, loginbytgc302} from "@/api/auth";
 import {hasUserName, registerUser} from "@/api/login";
-import SliderVerify from "@/components/sliderVerify.vue";
 import EmailButton from "@/components/EmailButton.vue";
 
 
 export default {
     name: "LoginComponents",
-    components: {EmailButton, SliderVerify},
+    components: {EmailButton},
     data() {
         return {
             loginForm: {

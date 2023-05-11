@@ -2,22 +2,22 @@
     <div class="sdss" id="invitecode-management">
         <div class="container">
             <div class="tableBar">
-                <el-input
-                        v-model="input"
-                        disabled="false"
-                        placeholder="请输入邀请码昵称"
-                        style="width: 250px"
-                        clearable
-                        @clear="cleanQuery"
-                        @keyup.enter.native="handleQuery"
-                >
-                    <i
-                            slot="prefix"
-                            class="el-input__icon el-icon-search"
-                            style="cursor: pointer"
-                            @click="init"
-                    ></i>
-                </el-input>
+<!--                <el-input-->
+<!--                        v-model="input"-->
+<!--                        disabled="false"-->
+<!--                        placeholder="请输入邀请码昵称"-->
+<!--                        style="width: 250px"-->
+<!--                        clearable-->
+<!--                        @clear="cleanQuery"-->
+<!--                        @keyup.enter.native="handleQuery"-->
+<!--                >-->
+<!--                    <i-->
+<!--                            slot="prefix"-->
+<!--                            class="el-input__icon el-icon-search"-->
+<!--                            style="cursor: pointer"-->
+<!--                            @click="init"-->
+<!--                    ></i>-->
+<!--                </el-input>-->
                 <div class="tableLab">
                     <span class="span-btn delBut non" @click="deleteHandle('批量', null)">批量删除</span>
                     <el-button

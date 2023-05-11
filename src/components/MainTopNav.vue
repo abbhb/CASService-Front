@@ -14,7 +14,7 @@
             <div class="warp" style="margin-right: auto;">
                 <el-dropdown v-if="isLogin">
                 <span class="el-dropdown-link">
-                    <el-avatar shape="circle" :size="40" :src="userphoto"/>
+                    <el-avatar shape="circle" :size="40" :src="avatar"/>
                 </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item >{{ name }}</el-dropdown-item>
@@ -34,6 +34,7 @@
 <script>
 import * as Api from "@/api/login";
 import router from "@/router";
+import {getImage} from "@/api/common";
 
 
 export default {
@@ -50,6 +51,7 @@ export default {
           userInfo: {},
           menuCollapse:false,
           isLogin:true,
+          avatar:require('@/assets/failed.png'),
       }
     },
     watch: {
@@ -81,12 +83,25 @@ export default {
             this.userInfo = JSON.parse(userInfo)
             this.name = this.userInfo.name;
             this.userphoto = this.userInfo.avatar;
+            this.getImage(this.userphoto)
             this.isLogin = true;
         }else {
             this.isLogin = false;
         }
     },
     methods:{
+        async getImage(q) {
+            if (!q.includes("http")) {
+                const res = await getImage(q)
+                if (String(res.code) === '1') {
+                    this.avatar = res.data;
+                    return String(res.data);
+                }
+                return '';
+            }
+            this.avatar = q;
+            return q;
+        },
         clickLogo(){
            this.menuCollapse = !this.menuCollapse;
            this.$emit('menuCollapseChange',this.menuCollapse);
@@ -107,9 +122,8 @@ export default {
                 sessionStorage.clear();
                 localStorage.clear();
                 this.$router.push("login");
-            } else if (data.status === 701) {
+            } else {
                 this.$message.error(data.msg);
-
             }
 
         },

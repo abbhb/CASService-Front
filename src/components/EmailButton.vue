@@ -1,7 +1,7 @@
 <template>
         <el-button :disabled="getEmailCodeStatus" class="" size="medium" type="primary"
                    @click.native.prevent="getEmailCode">
-            <span v-if="!getEmailCodeStatus">获取</span>
+            <span v-if="!getEmailCodeStatus">{{buttonName}}</span>
             <span v-else>{{ count }}s</span>
             <el-dialog
                 title="验证码校验"
@@ -29,7 +29,10 @@ export default {
     props:{
       email:{
           default:''
-      }
+      },
+        buttonName:{
+          default:'获取'
+      },
     },
     data(){
         return{
@@ -100,6 +103,8 @@ export default {
 
         },
         async TGetEmailCode() {
+            this.$message.info("点击成功，该过程较长，请等待!")
+
             let data = {
                 "email": this.email,
                 "randomCode": this.randomCode,
@@ -108,6 +113,7 @@ export default {
             const res = await getEmail(data)
             if (String(res.code) === '1') {
                 this.$message.success(res.msg)
+                this.$emit('successAdditionalMethod');
                 this.randomCode = ''
                 this.verificationCode = ''
                 this.getEmailCodeStatus = true

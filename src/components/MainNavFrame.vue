@@ -115,6 +115,7 @@ export default {
 
     },
     methods: {
+
         // 收取菜单按钮
         onMenuCollapse() {
             this.defaultUnfoldedMenu = [
