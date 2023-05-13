@@ -8,6 +8,12 @@ export function logoutApi(){
         method: 'post',
     })
 }
+export function logoutSize(){
+    return request({
+        url: '/user/logoutSize',
+        method: 'get',
+    })
+}
 
 export function checkToken(){
     return request({

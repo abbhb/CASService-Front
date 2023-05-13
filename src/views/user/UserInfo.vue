@@ -91,17 +91,37 @@ export default {
         };
     },
     created() {
+        this.init()
         if (this.$route.params.mustUpdataUserInfo) {
-            //必须补全信息才能授权登录
+            if (!this.userInfo.sex||!this.userInfo.phone||!this.userInfo.studentId||!this.userInfo.name){
+                this.$notify({
+                    title: '提示',
+                    message: '你必须补全并更新本页用户信息才能进行授权',
+                    duration: 0,
+                    type: 'warning',
+                });
+            }
+            if (!this.userInfo.email){
+                this.$notify({
+                    title: '提示',
+                    message: '你必须绑定电子邮箱才能进行授权登录<span style="font-weight: 800;color: #0f84ff;font-size: 15px;">(请手动前往安全中心绑定)</span>',
+                    dangerouslyUseHTMLString: true,
+                    duration: 0,
+                    type: 'warning',
+                    offset: 100
+                });
+            }
             this.$notify({
                 title: '提示',
-                message: '你必须补全并更新用户信息才能进行授权',
+                message: '补全所有信息后请<span style="font-weight: 800;color: #0f84ff;font-size: 15px;">重新进行认证登录</span>',
+                dangerouslyUseHTMLString: true,
                 duration: 0,
                 type: 'warning',
+                offset: 300
             });
         }
 
-        this.init()
+
     },
     methods: {
         reWrite() {
@@ -149,17 +169,6 @@ export default {
                 this.form_serve.avatar = this.userInfo.avatar
                 loading.close();
                 //注意用户名不能有重复
-                if (!this.userInfo.email) {
-                    //必须补全信息才能授权登录
-                    this.$notify({
-                        title: '提示',
-                        message: '你必须绑定电子邮箱才能进行授权<span style="font-weight: 800;color: #0f84ff;font-size: 15px;">(请前往安全中心绑定)</span>',
-                        dangerouslyUseHTMLString: true,
-                        duration: 0,
-                        type: 'warning',
-                        offset: 100
-                    });
-                }
             } else {
                 this.$message.error("数据错误,请刷新重试!")
             }

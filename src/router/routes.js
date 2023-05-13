@@ -10,6 +10,7 @@ import en from "@/views/redirect/en.vue";
 import gitee from "@/views/redirect/gitee.vue";
 import InviteCode from "@/views/admin/invitecode/InviteCode.vue";
 import findPassword from "@/views/user/FindPassword.vue";
+import safeLogout from "@/views/logout/safeLogout.vue";
 export default [
 	{
 		path: '/',
@@ -62,6 +63,15 @@ export default [
 		component: findPassword,
 		meta:{
 			requireAuth: false,
+			needrole:false
+		}
+	},
+	{
+		path: '/safeLogout',
+		name: 'safeLogout',
+		component: safeLogout,
+		meta:{
+			requireAuth: true,
 			needrole:false
 		}
 	},

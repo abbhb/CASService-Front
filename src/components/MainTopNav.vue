@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import * as Api from "@/api/login";
 import router from "@/router";
 import {getImage} from "@/api/common";
 
@@ -114,17 +113,7 @@ export default {
             document.body.style.zoom = 0.9
         },
         async onLogOut() {
-            const data = await Api.logoutApi()
-            console.log(data)
-
-            if (String(data.code) === '900') {
-                this.$message.success(data.msg);
-                sessionStorage.clear();
-                localStorage.clear();
-                router.push({name:'login'})
-            } else {
-                this.$message.error(data.msg);
-            }
+            router.push({name:'safeLogout'})
 
         },
         toLogin(){
