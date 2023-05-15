@@ -162,7 +162,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .all {
     background: #f9fbff;
     height: 100%;
@@ -189,7 +189,7 @@ export default {
             align-items: center;
             display: -webkit-box;
             display: -webkit-flex;
-            display: flex;
+            display: flex !important;
             -webkit-box-orient: vertical;
             -webkit-box-direction: normal;
 

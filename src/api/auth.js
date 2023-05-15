@@ -56,6 +56,42 @@ export function firstEN(data) {
         data
     })
 }
+
+export function addAuth(data) {
+    return request({
+        url:'/api2/oauth/addAuth',
+        method:'post',
+        data
+    })
+}
+export function editAuth(data) {
+    return request({
+        url:'/api2/oauth/editAuth',
+        method:'put',
+        data
+    })
+}
+
+export function listAuth(pageNum,pageSize) {
+    return request({
+        url:'/api2/oauth/list',
+        method:'get',
+        params:{
+            pageNum:pageNum,
+            pageSize:pageSize
+        }
+    })
+}
+
+export function deleteAuth(id) {
+    return request({
+        url:'/api2/oauth/delete',
+        method:'delete',
+        params:{
+            id:id
+        }
+    })
+}
 export function firstGitee(data) {
     return request({
         url:'/redirect/firstgitee',

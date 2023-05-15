@@ -44,6 +44,22 @@ export const menuData = [
                 roles:['10','1'],
             }
         ]
+    },
+    {
+        optionName: "OAuth认证",
+        iconClassName: "el-icon-setting",
+        index: '3',
+        disabled: false, // 是否禁用
+        roles:['10'],
+        childList: [
+            {
+                optionName: '接入管理',
+                index: '3-1',
+                routerName: "MangerOauth",
+                iconClassName: "el-icon-user",
+                roles:['10'],
+            }
+        ]
     }
 
 ]

@@ -123,7 +123,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .header {
     background-image:radial-gradient(123.45% 123.45% at 50% -191.89%,#b0e0ff 0,#18a7fd 46.56%,#3a77fd 100%);
     height: 40px;

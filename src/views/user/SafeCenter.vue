@@ -83,7 +83,7 @@
                         <div>
                             检测到你已经绑定<span style="font-weight: 800;">{{ this.emailform.originEmail }}</span>,请先验证!
                         </div>
-                        <div style="display: flex;flex-direction: row;">
+                        <div class="nmlk" style="display: flex;flex-direction: row;">
                             <el-input v-model="emailform.originCode" id="inputValue" type="text"
                                       placeholder="请输入原邮箱验证码"/>
                             <EmailButton :email="emailform.originEmail"></EmailButton>

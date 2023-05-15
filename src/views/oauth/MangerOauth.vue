@@ -1,30 +1,29 @@
 <template>
-    <div class="sdss" id="invitecode-management">
+    <div class="sdss" id="Oauth-management">
         <div class="container">
             <div class="tableBar">
-<!--                <el-input-->
-<!--                        v-model="input"-->
-<!--                        disabled="false"-->
-<!--                        placeholder="请输入邀请码昵称"-->
-<!--                        style="width: 250px"-->
-<!--                        clearable-->
-<!--                        @clear="cleanQuery"-->
-<!--                        @keyup.enter.native="handleQuery"-->
-<!--                >-->
-<!--                    <i-->
-<!--                            slot="prefix"-->
-<!--                            class="el-input__icon el-icon-search"-->
-<!--                            style="cursor: pointer"-->
-<!--                            @click="init"-->
-<!--                    ></i>-->
-<!--                </el-input>-->
+                <!--                <el-input-->
+                <!--                        v-model="input"-->
+                <!--                        disabled="false"-->
+                <!--                        placeholder="请输入客户端昵称"-->
+                <!--                        style="width: 250px"-->
+                <!--                        clearable-->
+                <!--                        @clear="cleanQuery"-->
+                <!--                        @keyup.enter.native="handleQuery"-->
+                <!--                >-->
+                <!--                    <i-->
+                <!--                            slot="prefix"-->
+                <!--                            class="el-input__icon el-icon-search"-->
+                <!--                            style="cursor: pointer"-->
+                <!--                            @click="init"-->
+                <!--                    ></i>-->
+                <!--                </el-input>-->
                 <div class="tableLab">
-                    <span class="span-btn delBut non" @click="deleteHandle('批量', null)">批量删除</span>
                     <el-button
                             type="primary"
-                            @click="addInviteCodetype('add')"
+                            @click="addOauthtype('add')"
                     >
-                        + 增加邀请码
+                        + 增加客户端
                     </el-button>
                 </div>
             </div>
@@ -33,35 +32,45 @@
                     stripe
                     class="tableBox"
                     v-loading="usertableloading"
-                    @selection-change="handleSelectionChange"
             >
                 <el-table-column
-                        type="selection"
-                        width="50"
+                        prop="clientName"
+                        sortable
+                        label="客户端名称"
+                        width="120"
                 ></el-table-column>
                 <el-table-column
-                        prop="inviteCode"
+                        prop="grantType"
+                        label="授权类型"
                         sortable
-                        label="邀请码"
-                        width="300"
-                ></el-table-column>
-                <el-table-column
-                        prop="persistence"
-                        label="多次使用"
-                        sortable
-                        width="150"
+                        width="120"
                 >
                     <template slot-scope="{ row }">
-                        <span v-if="String(row.persistence)==='1'">是</span>
-                        <span v-else>否</span>
+                        <span v-if="String(row.grantType)==='1'">授权码模式</span>
+                        <span v-else>其他</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column
-                        prop="usageCount"
+                        prop="redirectUri"
                         sortable
-                        label="已使用次数"
+                        label="回调地址"
                         width="100"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="clientId"
+                    sortable
+                    label="客户端id"
+                    width="160"
+                >
+                </el-table-column>
+                <el-table-column
+                    prop="clientSecret"
+                    sortable
+                    label="客户端秘钥"
+                    width="160"
+
                 >
                 </el-table-column>
                 <el-table-column
@@ -71,8 +80,8 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="createUserName"
-                        label="创建用户"
+                        prop="updateTime"
+                        label="更新时间"
                 >
                 </el-table-column>
                 <el-table-column
@@ -82,6 +91,14 @@
                         fixed="right"
                 >
                     <template slot-scope="scope">
+                        <el-button
+                            type="text"
+                            size="small"
+                            class="delBut non"
+                            @click="editHandel(scope.row)"
+                        >
+                            编辑
+                        </el-button>
                         <el-button
                                 type="text"
                                 size="small"
@@ -125,24 +142,61 @@
                     >
                         <div>
                             <el-form-item
-                                    label="生成条数:"
+                                    label="名称:"
                             >
                                 <el-input
-                                        v-model="classData.numberOfLines"
-                                        placeholder="请填写邀请码生成条数"
-                                        type="number"
-                                        maxlength="2"
+                                        v-model="classData.clientName"
+                                        placeholder="请填写客户端名称"
                                 />
                             </el-form-item>
-                            <el-form-item label="邀请码限制：">
-                                <el-select v-model="classData.persistence" placeholder="请选择邀请码限制">
+                            <el-form-item label="授权类型：">
+                                <el-select disabled v-model="classData.grantType" placeholder="请选择授权类型">
                                     <el-option
-                                            v-for="item in persistenceoptions"
+                                            v-for="item in grantTypeoptions"
                                             :key="item.label"
                                             :label="item.label"
                                             :value="item.value">
                                     </el-option>
                                 </el-select>
+                            </el-form-item>
+                            <el-form-item
+                                label="回调地址:"
+                            >
+                                <el-input
+                                    style="width: 300px;"
+                                    v-model="classData.redirectUri"
+                                    placeholder="必填:例如http://www.baidu.com"
+                                />
+                            </el-form-item>
+                            <el-form-item
+                                label="客户端ID:"
+                                v-if="this.action==='edit'"
+                            >
+                                <el-input
+                                    v-model="classData.clientId"
+                                    disabled
+                                    style="width: 280px;"
+                                    placeholder="请填写客户端ID"
+                                />
+                            </el-form-item>
+                            <el-form-item
+                                label="客户端秘钥:"
+                            >
+                                <el-input
+                                    v-model="classData.clientSecret"
+                                    :disabled="unEditUnSafeOption"
+                                    style="width: 280px;"
+                                    placeholder="请填写客户端秘钥"
+                                />
+                                <el-button
+                                    v-if="unEditUnSafeOption"
+                                    type="text"
+                                    size="small"
+                                    class="delBut non"
+                                    @click="editClientSecret()"
+                                >
+                                    编辑
+                                </el-button>
                             </el-form-item>
                         </div>
 
@@ -165,7 +219,10 @@
                         type="primary"
                         size="medium"
                         @click="submitForm()"
-                >生成</el-button>
+                >
+                    <span v-if="this.action==='add'">添加</span>
+                    <span v-else-if="this.action==='edit'">更新</span>
+                </el-button>
           </span>
                 </el-dialog>
             </div>
@@ -175,14 +232,9 @@
 
 <script>
 import router from "@/router";
-import {
-    addInviteCodeList,
-    addInviteCodeOne,
-    delInviteCodeList,
-    delInviteCodeOne, getInviteCodeList
-} from "@/api/invitecode";
+import {addAuth, deleteAuth, editAuth, listAuth} from "@/api/auth";
 export default {
-    name: "InviteCode",
+    name: "MangerOauth",
     data() {
         return {
 
@@ -196,34 +248,30 @@ export default {
             userInfo: {},
             token:'',
             isAdmin:false,
-            persistenceoptions:[{label:"多次使用",value:1},{label:"单次销毁",value:0}],
+            grantTypeoptions:[{label:"授权码模式",value:1}],
             classData: {
                 id:'',//id
-                title: '新建邀请码',
+                title: '新建客户端',
                 dialogVisible: false,
-                numberOfLines: 1,
-                persistence:0,//默认为邀请码
+                redirectUri: '',
+                grantType:1,//默认为授权码模式
+                clientName:'',
+                clientId:'',
+                clientSecret:'',
             },
             inputStyle  : {'flex':1},
-        }
-    },
-    watch:{
-        'classData.numberOfLines':{
-            handler(val1,val2){
-                if (val1<1){
-                    this.classData.numberOfLines = val2
-                }
-            }
+            unEditUnSafeOption:true,
+
         }
     },
     computed: {
         rules () {
             return {
-                'persistence': [
-                    {'required': true, 'message': '请选择邀请码限制', 'trigger': ['change']}
+                'clientName': [
+                    {'required': true, 'message': '请选择客户端名称', 'trigger': ['change']}
                 ],
-                'numberOfLines': [
-                    {'required': true, 'message': '请输入生成条数', 'trigger': ['change']}
+                'redirectUri': [
+                    {'required': true, 'message': '请输入回调地址', 'trigger': ['change']}
                 ],
             }
         }
@@ -233,7 +281,7 @@ export default {
         this.token = localStorage.getItem('token')
         const userInfo = window.localStorage.getItem('userInfo')
         if (userInfo){
-            if (String(this.userInfo.permission)==='10'||String(this.userInfo.permission)==='1'){
+            if (String(this.userInfo.permission)==='10'){
                 this.isAdmin = true
                 this.init()
             }else {
@@ -247,16 +295,36 @@ export default {
     mounted() {
     },
     methods: {
+        editClientSecret(){
+            if (this.unEditUnSafeOption === false){
+                return
+            }
+            this.$confirm('不建议手动编辑此项, 仍要编辑?', '警告？', {
+                'confirmButtonText': '不听劝告',
+                'cancelButtonText': '及时收手',
+            }).then(async () => {
+                this.unEditUnSafeOption = false
+            })
 
+        },
+        editHandel(row){
+            this.classData.id = row.id
+            this.classData.clientName = row.clientName
+            this.classData.redirectUri = row.redirectUri
+            this.classData.grantType = row.grantType
+            this.classData.title = '编辑客户端'
+            this.classData.dialogVisible = true
+            this.classData.clientId = row.clientId
+            this.classData.clientSecret = row.clientSecret
+            this.action = 'edit'
+
+        },
         async init () {
             this.usertableloading = true
-            let params = {}
-            params.pageNum = this.page
-            params.pageSize = this.pageSize
             // if (this.input){
             //     params.name = this.input ? this.input : undefined
             // }
-            const res = await getInviteCodeList(params)
+            const res = await listAuth(this.page,this.pageSize)
             console.log(res)
             if (String(res.code) === '1') {
                 this.tableData = res.data.records || []
@@ -277,63 +345,32 @@ export default {
             this.init()
         },
         // 添加
-        addInviteCodetype (st) {
+        addOauthtype (st) {
             if (st === 'add'){
                 this.action = 'add'
                 this.cleanform()
-                this.classData.title = '新增邀请码'
+                this.classData.title = '新增客户端'
                 this.classData.dialogVisible = true
             }
         },
         // 删除
         deleteHandle (type, id) {
-            let params = {}
-            if (type === '批量' && id === null) {
-                if (this.checkList.length === 0) {
-                    return this.$message.error('请选择删除对象')
+            this.$confirm('确认删除该客户端, 是否继续?', '确定删除', {
+                'confirmButtonText': '确定',
+                'cancelButtonText': '取消',
+            }).then(async () => {
+                const res = await deleteAuth(id)
+                if (String(res.code)==='1'){
+                    this.$message.success(res.data || '操作成功')
+                    this.handleQuery()
+                }else {
+                    this.$message.error(res.msg || '操作失败')
                 }
-            }
-            if (type === '批量'){
-                params.id = this.checkList.join(',')
-                this.$confirm('确认删除该邀请码, 是否继续?', '确定删除', {
-                    'confirmButtonText': '确定',
-                    'cancelButtonText': '取消',
-                }).then(async () => {
-                    const res = await delInviteCodeList(params)
-                    if (String(res.code)==='1'){
-                        this.$message.success(res.msg)
-                        this.handleQuery()
-                    }else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
-            }else {
-                params.id = id
-                this.$confirm('确认删除该邀请码, 是否继续?', '确定删除', {
-                    'confirmButtonText': '确定',
-                    'cancelButtonText': '取消',
-                }).then(async () => {
-                    const res = await delInviteCodeOne(params)
-                    if (String(res.code)==='1'){
-                        this.$message.success(res.msg)
-                        this.handleQuery()
-                    }else {
-                        this.$message.error(res.msg || '操作失败')
-                    }
-                })
-            }
-
-
-
-        },
-
-        // 全部操作
-        handleSelectionChange (val){
-            let checkArr = []
-            val.forEach((n) => {
-                checkArr.push(n.id)
             })
-            this.checkList = checkArr
+
+
+
+
         },
         handleSizeChange (val) {
             console.log(val)
@@ -350,11 +387,11 @@ export default {
         },
         cleanform(){
 
-            if (this.classData.numberOfLines) {
-                this.classData.numberOfLines = 1
+            if (this.classData.redirectUri) {
+                this.classData.redirectUri = ''
             }
-            if (this.classData.persistence) {
-                this.classData.persistence = 0
+            if (this.classData.clientName) {
+                this.classData.clientName = ''
             }
         },
 
@@ -364,54 +401,79 @@ export default {
         },
 
         async submitForm() {
-                //添加
-                if (this.action==='add'){
-                    this.$refs["classData"].validate(async (valid) => {  //开启校验
-                        console.log(valid)
-                        if (!valid) {   // 如果校验通过，请求接口，允许提交表单
+            //添加
+            if (this.action==='add'){
+                this.$refs["classData"].validate(async (valid) => {  //开启校验
+                    console.log(valid)
+                    if (!valid) {   // 如果校验通过，请求接口，允许提交表单
+                        return false;
+                    } else {
+                        let data = {}
+                        console.log(this.classData)
+                        if (String(this.classData.clientName)==='') {
+                            this.$message.error("请你输入完整")
                             return false;
-                        } else {
-                            let data = {}
-                            console.log(this.classData)
-                            if (String(this.classData.numberOfLines)==='') {
-                                this.$message.error("请你输入完整")
-                                return false;
-                            }
-                            if (String(this.classData.numberOfLines)==='') {
-                                this.$message.error("请你输入完整")
-                                return false;
-                            }
-                            data.persistence = Number(this.classData.persistence)
-
-                            if (String(this.classData.numberOfLines)==='1'){
-
-                                const res = await addInviteCodeOne(data)
-                                if (String(res.code)==='1'){
-                                    this.$message.success(res.msg)
-
-                                    this.handleQuery()
-                                    this.cancel()
-                                    this.dialogVisible = false
-                                }else {
-                                    this.$message.error(res.msg)
-                                }
-                                console.log(res)
-                            }else {
-                                data.numberOfLines = Number(this.classData.numberOfLines)
-                                const res = await addInviteCodeList(data)
-                                if (String(res.code)==='1'){
-                                    this.$message.success(res.msg)
-                                    this.handleQuery()
-                                    this.cancel()
-                                    this.dialogVisible = false
-                                }else {
-                                    this.$message.error(res.msg)
-                                }
-                                console.log(res)
-                            }
-
                         }
-                    });
+                        if (String(this.classData.redirectUri)==='') {
+                            this.$message.error("请你输入完整")
+                            return false;
+                        }
+                        data.redirectUri = this.classData.redirectUri
+                        data.clientName = this.classData.clientName
+                        data.grantType = this.classData.grantType
+
+                        const res = await addAuth(data)
+                        if (String(res.code)==='1'){
+                            this.$message.success(res.data)
+
+                            this.handleQuery()
+                            this.cancel()
+                            this.dialogVisible = false
+                        }else {
+                            this.$message.error(res.msg)
+                        }
+                        console.log(res)
+
+
+                    }
+                });
+            }else if (this.action==='edit'){
+                this.$refs["classData"].validate(async (valid) => {  //开启校验
+                    console.log(valid)
+                    if (!valid) {   // 如果校验通过，请求接口，允许提交表单
+                        return false;
+                    } else {
+                        let data = {}
+                        console.log(this.classData)
+                        if (String(this.classData.clientName)==='') {
+                            this.$message.error("请你输入完整")
+                            return false;
+                        }
+                        if (String(this.classData.redirectUri)==='') {
+                            this.$message.error("请你输入完整")
+                            return false;
+                        }
+                        data.id = this.classData.id
+                        data.redirectUri = this.classData.redirectUri
+                        data.clientName = this.classData.clientName
+                        data.grantType = this.classData.grantType
+                        data.clientSecret = this.classData.clientSecret
+
+                        const res = await editAuth(data)
+                        if (String(res.code)==='1'){
+                            this.$message.success(res.data)
+
+                            this.handleQuery()
+                            this.cancel()
+                            this.dialogVisible = false
+                        }else {
+                            this.$message.error(res.msg)
+                        }
+                        console.log(res)
+
+
+                    }
+                });
             }
         },
     }
@@ -457,7 +519,7 @@ export default {
 .selectInput .flavorSelect .none {
     font-size: 14px;
 }
-#invitecode-management .uploadImg .el-form-item__label::before{
+#Oauth-management .uploadImg .el-form-item__label::before{
     content: '*';
     color: #F56C6C;
     margin-right: 4px;

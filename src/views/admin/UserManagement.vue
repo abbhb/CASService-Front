@@ -763,7 +763,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .sdss {
   background-color: #fff;
   display: flex;

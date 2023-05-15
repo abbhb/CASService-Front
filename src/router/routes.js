@@ -11,6 +11,7 @@ import gitee from "@/views/redirect/gitee.vue";
 import InviteCode from "@/views/admin/invitecode/InviteCode.vue";
 import findPassword from "@/views/user/FindPassword.vue";
 import safeLogout from "@/views/logout/safeLogout.vue";
+import MangerOauth from "@/views/oauth/MangerOauth.vue";
 export default [
 	{
 		path: '/',
@@ -119,6 +120,16 @@ export default [
 					requireAuth: true,
 					needrole:true,
 					roles:[10,1]
+				}
+			},
+			{
+				path: '/MangerOauth',
+				name: 'MangerOauth',
+				component: MangerOauth,
+				meta:{
+					requireAuth: true,
+					needrole:true,
+					roles:[10]
 				}
 			},
 			{

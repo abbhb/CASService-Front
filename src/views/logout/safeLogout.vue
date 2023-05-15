@@ -80,7 +80,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .all {
     background: #f9fbff;
     height: 100%;
@@ -96,6 +96,9 @@ export default {
             border-radius: 8px;
             box-shadow: 0 6px 32px -7px rgba(29, 102, 189, .16);
             -webkit-flex-direction: column;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex !important;
             flex-direction: column;
             -webkit-justify-content: center;
             justify-content: center;
@@ -105,9 +108,7 @@ export default {
             -webkit-box-align: center;
             -webkit-align-items: center;
             align-items: center;
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
+
             -webkit-box-orient: vertical;
             -webkit-box-direction: normal;
 

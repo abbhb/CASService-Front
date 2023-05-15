@@ -8,6 +8,14 @@ export function getSelfInviteCodeList(params) {
     })
 }
 
+export function getInviteCodeList(params) {
+    return request({
+        url:'/api2/invitecode/listAll',
+        method:'get',
+        params
+    })
+}
+
 export function addInviteCodeOne(data) {
     return request({
         url:'/api2/invitecode/addOne',
