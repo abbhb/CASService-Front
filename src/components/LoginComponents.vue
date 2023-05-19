@@ -109,7 +109,7 @@
  * 登录模块
  */
 import router from "@/router";
-import {login, login302, loginbytgc, loginbytgc302} from "@/api/auth";
+import {login, loginbytgc} from "@/api/auth";
 import {hasUserName, registerUser} from "@/api/login";
 import EmailButton from "@/components/EmailButton.vue";
 
@@ -216,48 +216,29 @@ export default {
         }
     },
     async created() {
-        if (window.location.search) {
-            const service = window.location.search.split("?service=")[1]
-            const res = await loginbytgc302(service)
-            if (String(res.code) === '1') {
-                //正常登录
-                localStorage.setItem('userInfo', JSON.stringify(res.data))
-                localStorage.setItem("permission", res.data.permission)
-                localStorage.setItem('userId', String(res.data.id))
-                // Cookies.set('tgc',res.data.tgc)
-                router.push({name: 'userinfo'})
-
-            } else if (String(res.code) === '302') {
-                //需要重定向
-                window.location.href = res.data.service + '?ticket=' + res.data.st;
-            } else if (String(res.code) === '308') {
-                //必须补全信息
-                localStorage.setItem('userInfo', JSON.stringify(res.data))
-                localStorage.setItem("permission", res.data.permission)
-                localStorage.setItem('userId', String(res.data.id))
-                router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
+        const data = {}
+        if (this.isCASLogin()) {
+            const service = window.location.search.split("service=")[1].split("&")[0]
+            data.redirectUri = service
+        } else if (this.isOAuth2Login()){
+            //OAuth2.0登录
+            if (window.location.search.indexOf("redirect_uri") !== -1) {
+                const redirectUri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                data.redirectUri = redirectUri
             }
-        } else {
-            const res = await loginbytgc()
-            if (String(res.code) === '1') {
-                //正常登录
-                localStorage.setItem('userInfo', JSON.stringify(res.data))
-                localStorage.setItem("permission", res.data.permission)
-                localStorage.setItem('userId', String(res.data.id))
-                // Cookies.set('tgc',res.data.tgc)
-                router.push({name: 'userinfo'})
-
-            } else if (String(res.code) === '302') {
-                //需要重定向
-                window.location.href = res.data.service + '?ticket=' + res.data.st;
-            } else if (String(res.code) === '308') {
-                //必须补全信息
-                localStorage.setItem('userInfo', JSON.stringify(res.data))
-                localStorage.setItem("permission", res.data.permission)
-                localStorage.setItem('userId', String(res.data.id))
-                router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
+            const clientId = window.location.search.split("client_id=")[1].split("&")[0]
+            data.clientId = clientId
+            const responseType = window.location.search.split("response_type=")[1].split("&")[0]
+            data.responseType = responseType
+            if (window.location.search.indexOf("state") !== -1) {
+                const state = window.location.search.split("state=")[1].split("&")[0]
+                data.state = state
             }
+        }else {
+            //普通登录
         }
+        const res = await loginbytgc(data)
+        this.loginSuccessR(res)
 
     },
     methods: {
@@ -363,6 +344,47 @@ export default {
             this.isRegistration = false;
             this.cancelForm()
         },
+        isCASLogin() {
+            return !!(window.location.search &&
+                window.location.search.indexOf("service=") !== -1 &&
+                window.location.search.indexOf("response_type") === -1 &&
+                window.location.search.indexOf("redirect_uri") === -1);
+        },
+        isOAuth2Login() {
+            //判断是不是需要走oauth2.0
+            return !!(window.location.search &&
+                window.location.search.indexOf("service=") === -1 &&
+                window.location.search.indexOf("response_type") !== -1 &&
+                window.location.search.indexOf("client_id") !== -1);
+        },
+        loginSuccessR(res){
+            if (String(res.code) === '1') {
+                //正常登录
+                localStorage.setItem('userInfo', JSON.stringify(res.data))
+                localStorage.setItem("permission", res.data.permission)
+                localStorage.setItem('userId', String(res.data.id))
+                // Cookies.set('tgc',res.data.tgc)
+                router.push({name: 'userinfo'})
+
+            } else if (String(res.code) === '302') {
+                //需要重定向
+                window.location.href = res.data.redirectUri + '?ticket=' + res.data.ticket;
+            } else if (String(res.code)==='303'){
+                //oauth2.0协议部分
+                console.log(res.data)
+                //此处验证可得必须加上该加的括号，前面最好加个字符串不然容易报错
+                window.location.href = '' + res.data.redirectUri + '?code='+res.data.code+(res.data.state?'&state='+res.data.state:'');
+            } else if (String(res.code) === '308') {
+                //必须补全信息
+                localStorage.setItem('userInfo', JSON.stringify(res.data))
+                localStorage.setItem("permission", res.data.permission)
+                localStorage.setItem('userId', String(res.data.id))
+                router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
+            } else {
+                this.$message.error(res.msg)
+                this.loading = false
+            }
+        },
         async handleLogin() {
             //登录
             this.$refs.loginForm.validate(async (valid) => {
@@ -371,55 +393,32 @@ export default {
                     let data = {}
                     data.username = this.loginForm.username
                     data.password = this.loginForm.password
-
-                    if (window.location.search) {
-                        const service = window.location.search.split("?service=")[1]
-                        const res = await login302(data, service)
-                        if (String(res.code) === '1') {
-                            //正常登录
-                            localStorage.setItem('userInfo', JSON.stringify(res.data))
-                            localStorage.setItem("permission", res.data.permission)
-                            localStorage.setItem('userId', String(res.data.id))
-                            // Cookies.set('tgc',res.data.tgc)
-                            router.push({name: 'userinfo'})
-
-                        } else if (String(res.code) === '302') {
-                            //需要重定向
-                            window.location.href = res.data.service + '?ticket=' + res.data.st;
-                        } else if (String(res.code) === '308') {
-                            //必须补全信息
-                            localStorage.setItem('userInfo', JSON.stringify(res.data))
-                            localStorage.setItem("permission", res.data.permission)
-                            localStorage.setItem('userId', String(res.data.id))
-                            router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
-                        } else {
-                            this.$message.error(res.msg)
-                            this.loading = false
+                    if (this.isCASLogin()) {
+                        //CAS登录,data参数暂时只需需要添加redirectUri
+                        const service = window.location.search.split("service=")[1].split("&")[0]
+                        data.redirectUri = service
+                    }else if (this.isOAuth2Login()){
+                        //OAuth2.0登录
+                        if (window.location.search.indexOf("redirect_uri") !== -1) {
+                            const redirectUri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                            data.redirectUri = redirectUri
                         }
+                        const clientId = window.location.search.split("client_id=")[1].split("&")[0]
+                        data.clientId = clientId
+                        const responseType = window.location.search.split("response_type=")[1].split("&")[0]
+                        data.responseType = responseType
+                        if (window.location.search.indexOf("state") !== -1) {
+                            const state = window.location.search.split("state=")[1].split("&")[0]
+                            data.state = state
+                        }
+
                     } else {
-                        const res = await login(data)
-                        if (String(res.code) === '1') {
-                            //正常登录
-                            localStorage.setItem('userInfo', JSON.stringify(res.data))
-                            localStorage.setItem("permission", res.data.permission)
-                            localStorage.setItem('userId', String(res.data.id))
-                            // Cookies.set('tgc',res.data.tgc)
-                            router.push({name: 'userinfo'})
-
-                        } else if (String(res.code) === '302') {
-                            //需要重定向
-                            window.location.href = res.data.service + '?ticket=' + res.data.st;
-                        } else if (String(res.code) === '308') {
-                            //必须补全信息
-                            localStorage.setItem('userInfo', JSON.stringify(res.data))
-                            localStorage.setItem("permission", res.data.permission)
-                            localStorage.setItem('userId', String(res.data.id))
-                            router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
-                        } else {
-                            this.$message.error(res.msg)
-                            this.loading = false
-                        }
+                        //普通登录
+                        //登录管理系统
                     }
+                    const res = await login(data)
+                    console.log("code"+res.code)
+                    this.loginSuccessR(res)
                 }
             })
         },

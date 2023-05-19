@@ -159,15 +159,28 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
+
+
                             <el-form-item
                                 label="回调地址:"
                             >
+                                <!--  slot="label"  ==> 自定义label的插槽  -->
+                                <template slot-scope="{}" slot="label">
+                                    <HelpComponent>
+                                        若不填写则需在请求时带上该参数,填写将回调填写的地址<br/>
+                                        回调示例 http://10.15.245.1:8081/callback?code=xxxxxxxxx&state=传过来的state（若有）<br/>
+                                        state:Client generated CSRF token. This value will be passed back to the client.
+                                    </HelpComponent>
+                                    <span>回调地址:</span>
+                                </template>
                                 <el-input
                                     style="width: 300px;"
                                     v-model="classData.redirectUri"
-                                    placeholder="必填:例如http://www.baidu.com"
+                                    placeholder="选填:例如http://www.baidu.com"
                                 />
                             </el-form-item>
+
+
                             <el-form-item
                                 label="客户端ID:"
                                 v-if="this.action==='edit'"
@@ -233,8 +246,10 @@
 <script>
 import router from "@/router";
 import {addAuth, deleteAuth, editAuth, listAuth} from "@/api/auth";
+import HelpComponent from "@/components/HelpComponent.vue";
 export default {
     name: "MangerOauth",
+    components: {HelpComponent},
     data() {
         return {
 
@@ -271,7 +286,7 @@ export default {
                     {'required': true, 'message': '请选择客户端名称', 'trigger': ['change']}
                 ],
                 'redirectUri': [
-                    {'required': true, 'message': '请输入回调地址', 'trigger': ['change']}
+                    {'required': false, 'message': '请输入回调地址[可选]', 'trigger': ['change']}
                 ],
             }
         }
@@ -414,10 +429,6 @@ export default {
                             this.$message.error("请你输入完整")
                             return false;
                         }
-                        if (String(this.classData.redirectUri)==='') {
-                            this.$message.error("请你输入完整")
-                            return false;
-                        }
                         data.redirectUri = this.classData.redirectUri
                         data.clientName = this.classData.clientName
                         data.grantType = this.classData.grantType
@@ -446,10 +457,6 @@ export default {
                         let data = {}
                         console.log(this.classData)
                         if (String(this.classData.clientName)==='') {
-                            this.$message.error("请你输入完整")
-                            return false;
-                        }
-                        if (String(this.classData.redirectUri)==='') {
                             this.$message.error("请你输入完整")
                             return false;
                         }

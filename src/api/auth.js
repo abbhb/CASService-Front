@@ -8,26 +8,14 @@ export function login(data) {
         data
     })
 }
-export function login302(data,service) {
+
+export function loginbytgc(data) {
     return request({
-        url:'/user/auth/login'+'?service='+service,
+        url:'/user/auth/loginbytgc',
         method:'post',
         data
     })
 }
-export function loginbytgc() {
-    return request({
-        url:'/user/auth/loginbytgc',
-        method:'get'
-    })
-}
-export function loginbytgc302(service) {
-    return request({
-        url:'/user/auth/loginbytgc'+'?service='+service,
-        method:'get'
-    })
-}
-
 
 export function redirectEN(code) {
     return request({
@@ -59,14 +47,14 @@ export function firstEN(data) {
 
 export function addAuth(data) {
     return request({
-        url:'/api2/oauth/addAuth',
+        url:'/oauth2.0/addAuth',
         method:'post',
         data
     })
 }
 export function editAuth(data) {
     return request({
-        url:'/api2/oauth/editAuth',
+        url:'/oauth2.0/editAuth',
         method:'put',
         data
     })
@@ -74,7 +62,7 @@ export function editAuth(data) {
 
 export function listAuth(pageNum,pageSize) {
     return request({
-        url:'/api2/oauth/list',
+        url:'/oauth2.0/list',
         method:'get',
         params:{
             pageNum:pageNum,
@@ -85,7 +73,7 @@ export function listAuth(pageNum,pageSize) {
 
 export function deleteAuth(id) {
     return request({
-        url:'/api2/oauth/delete',
+        url:'/oauth2.0/delete',
         method:'delete',
         params:{
             id:id
