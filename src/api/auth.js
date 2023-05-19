@@ -47,14 +47,14 @@ export function firstEN(data) {
 
 export function addAuth(data) {
     return request({
-        url:'/oauth2.0/addAuth',
+        url:'/oauth2/addAuth',
         method:'post',
         data
     })
 }
 export function editAuth(data) {
     return request({
-        url:'/oauth2.0/editAuth',
+        url:'/oauth2/editAuth',
         method:'put',
         data
     })
@@ -62,7 +62,7 @@ export function editAuth(data) {
 
 export function listAuth(pageNum,pageSize) {
     return request({
-        url:'/oauth2.0/list',
+        url:'/oauth2/list',
         method:'get',
         params:{
             pageNum:pageNum,
@@ -73,7 +73,7 @@ export function listAuth(pageNum,pageSize) {
 
 export function deleteAuth(id) {
     return request({
-        url:'/oauth2.0/delete',
+        url:'/oauth2/delete',
         method:'delete',
         params:{
             id:id
