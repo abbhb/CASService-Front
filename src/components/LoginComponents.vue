@@ -363,24 +363,33 @@ export default {
                 localStorage.setItem('userInfo', JSON.stringify(res.data))
                 localStorage.setItem("permission", res.data.permission)
                 localStorage.setItem('userId', String(res.data.id))
+                localStorage.setItem('tgc',String(res.data.tgc))
                 // Cookies.set('tgc',res.data.tgc)
                 router.push({name: 'userinfo'})
 
             } else if (String(res.code) === '302') {
                 //需要重定向
+                localStorage.setItem('tgc',String(res.data.tgc))
                 window.location.href = res.data.redirectUri + '?ticket=' + res.data.ticket;
             } else if (String(res.code)==='303'){
                 //oauth2.0协议部分
                 console.log(res.data)
+                localStorage.setItem('tgc',String(res.data.tgc))
                 //此处验证可得必须加上该加的括号，前面最好加个字符串不然容易报错
                 window.location.href = '' + res.data.redirectUri + '?code='+res.data.code+(res.data.state?'&state='+res.data.state:'');
             } else if (String(res.code) === '308') {
                 //必须补全信息
                 localStorage.setItem('userInfo', JSON.stringify(res.data))
                 localStorage.setItem("permission", res.data.permission)
+                localStorage.setItem('tgc',String(res.data.tgc))
                 localStorage.setItem('userId', String(res.data.id))
                 router.push({name: 'userinfo', params: {mustUpdataUserInfo: true}})
-            } else {
+            } else if (String(res.code)==='900'){
+                localStorage.clear()
+                sessionStorage.clear()
+                router.push({name: 'login'})
+            }
+            else {
                 this.$message.error(res.msg)
                 this.loading = false
             }

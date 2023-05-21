@@ -7,6 +7,7 @@ export function inject(service) {
         (config) => {
             // console.log(config, 'config')
             config.headers['Content-Type'] = 'application/json' // 关键所在
+            config.headers['tgc'] = localStorage.getItem('tgc')
             // 可以进行token验证
             return config;
         },
@@ -21,19 +22,6 @@ export function inject(service) {
             switch (response.data.code) {
                 case 900:
                     //可能是票过期，清除它
-                    sessionStorage.clear()
-                    localStorage.clear()
-                    router.replace({ //跳转到登录页面
-                        path: '/login',
-                        // 将跳转的路由path作为参数，登录成功后跳转到该路由
-                        query: { redirect: router.currentRoute.fullPath}
-                    });
-            }
-            switch(response.status){
-
-                //token校验
-                case 401:
-                    //可能是token过期，清除它
                     sessionStorage.clear()
                     localStorage.clear()
                     router.replace({ //跳转到登录页面

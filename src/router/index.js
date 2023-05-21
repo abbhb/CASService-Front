@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import routes from "./routes";
-import Cookies from 'js-cookie'
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -14,7 +13,7 @@ router.beforeEach((to, from, next) => {
 	console.log("to")
 	console.log(to)
 	if (to.meta.requireAuth) { // 判断跳转的路由是否需要登录
-		if (Cookies.get('tgc')) {
+		if (localStorage.getItem('tgc')) {
 			if (to.meta.needrole){
 				// console.log(to.meta.roles)
 				// console.log(localStorage.getItem("permission"))
