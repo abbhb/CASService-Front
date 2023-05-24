@@ -370,7 +370,12 @@ export default {
             } else if (String(res.code) === '302') {
                 //需要重定向
                 localStorage.setItem('tgc',String(res.data.tgc))
-                window.location.href = res.data.redirectUri + '?ticket=' + res.data.ticket;
+                if (res.data.redirectUri.indexOf('?') === -1) {
+                    window.location.href = res.data.redirectUri + '?ticket=' + res.data.ticket;
+                }else {
+                    window.location.href = res.data.redirectUri + '&ticket=' + res.data.ticket;
+
+                }
             } else if (String(res.code)==='303'){
                 //oauth2.0协议部分
                 console.log(res.data)
