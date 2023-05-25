@@ -9,13 +9,13 @@ export function getEmail(data) {
     })
 }
 
-export function havaEmailCode(email,emailCode) {
+export function havaEmailCode(email,email_code) {
     return request({
         url:'/common/havaEmailCode',
         method:'post',
         data:{
             'email':email,
-            'emailCode':emailCode
+            'email_code':email_code
         }
     })
 }

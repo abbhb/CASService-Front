@@ -19,10 +19,10 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item :rules="[
-        { required: true, message: 'studentId is required' },
-        { type: 'number', message: 'studentId must be a number' }
+        { required: true, message: 'student_id is required' },
+        { type: 'number', message: 'student_id must be a number' }
       ]" label="学号">
-                        <el-input v-model="form.studentId"/>
+                        <el-input v-model="form.student_id"/>
                     </el-form-item>
                     <el-form-item :rules="[
         { required: true, message: '手机号码必须填写' },
@@ -33,7 +33,7 @@
 
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit"
-                                   :disabled="(form_serve.id === form.id)&&(form_serve.username === form.username)&&(form_serve.name === form.name)&&(form_serve.sex === form.sex)&&(form_serve.studentId === form.studentId)&&(form_serve.phone === form.phone)&&(form_serve.avatar === form.avatar) ? true:false">
+                                   :disabled="(form_serve.id === form.id)&&(form_serve.username === form.username)&&(form_serve.name === form.name)&&(form_serve.sex === form.sex)&&(form_serve.student_id === form.student_id)&&(form_serve.phone === form.phone)&&(form_serve.avatar === form.avatar) ? true:false">
                             更新
                         </el-button>
                         <el-button @click="reWrite">重置</el-button>
@@ -73,7 +73,7 @@ export default {
                 username: '',
                 name: '',
                 sex: '',
-                studentId: '',
+                student_id: '',
                 phone: '',
                 avatar: '',
             },
@@ -82,7 +82,7 @@ export default {
                 username: '',
                 name: '',
                 sex: '',
-                studentId: '',
+                student_id: '',
                 phone: '',
                 avatar: '',
             },
@@ -93,7 +93,7 @@ export default {
     created() {
         this.init()
         if (this.$route.params.mustUpdataUserInfo) {
-            if (!this.userInfo.sex||!this.userInfo.phone||!this.userInfo.studentId||!this.userInfo.name){
+            if (!this.userInfo.sex||!this.userInfo.phone||!this.userInfo.student_id||!this.userInfo.name){
                 this.$notify({
                     title: '提示',
                     message: '你必须补全并更新本页用户信息才能进行授权',
@@ -129,7 +129,7 @@ export default {
             this.form.phone = this.userInfo.phone
             this.form.sex = this.userInfo.sex
             this.form.username = this.userInfo.username
-            this.form.studentId = this.userInfo.studentId
+            this.form.student_id = this.userInfo.student_id
             this.form.id = this.userInfo.id
             this.form.avatar = this.userInfo.avatar
 
@@ -137,7 +137,7 @@ export default {
             this.form_serve.phone = this.userInfo.phone
             this.form_serve.sex = this.userInfo.sex
             this.form_serve.username = this.userInfo.username
-            this.form_serve.studentId = this.userInfo.studentId
+            this.form_serve.student_id = this.userInfo.student_id
             this.form_serve.id = this.userInfo.id
             this.form_serve.avatar = this.userInfo.avatar
 
@@ -156,7 +156,7 @@ export default {
                 this.form.phone = this.userInfo.phone
                 this.form.sex = this.userInfo.sex
                 this.form.username = this.userInfo.username
-                this.form.studentId = this.userInfo.studentId
+                this.form.student_id = this.userInfo.student_id
                 this.form.id = this.userInfo.id
                 this.form.avatar = this.userInfo.avatar
 
@@ -164,7 +164,7 @@ export default {
                 this.form_serve.phone = this.userInfo.phone
                 this.form_serve.sex = this.userInfo.sex
                 this.form_serve.username = this.userInfo.username
-                this.form_serve.studentId = this.userInfo.studentId
+                this.form_serve.student_id = this.userInfo.student_id
                 this.form_serve.id = this.userInfo.id
                 this.form_serve.avatar = this.userInfo.avatar
                 loading.close();
@@ -192,7 +192,7 @@ export default {
                 this.$message.error("请你输入完整")
                 return false;
             }
-            if (!this.form.studentId) {
+            if (!this.form.student_id) {
                 this.$message.error("请你输入学号")
                 return false;
             }
@@ -204,7 +204,7 @@ export default {
             data.phone = this.form.phone
             data.status = this.userInfo.status
             data.username = this.form.username
-            data.studentId = this.form.studentId
+            data.student_id = this.form.student_id
             data.avatar = this.form.avatar
             const res = await Api.updataforuserself(data)
             if (String(res.code) === '1') {

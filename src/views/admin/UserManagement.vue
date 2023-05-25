@@ -73,20 +73,20 @@
 
 
         <el-table-column
-                prop="permissionName"
+                prop="permission_name"
                 sortable
                 label="用户权限"
                 width="60"
         >
         </el-table-column>
       <el-table-column
-          prop="createTime"
+          prop="create_time"
           sortable
           label="创建时间"
       >
       </el-table-column>
       <el-table-column
-          prop="updateTime"
+          prop="update_time"
           sortable
           label="更新时间"
       >
@@ -134,7 +134,7 @@
         @current-change="handleCurrentChange"
         :current-page="page"
         :page-sizes="[5, 10, 20, 40]"
-        :page-size="pageSize"
+        :page-size="page_size"
         layout="total, sizes, prev, pager, next, jumper"
         :total="counts">
     </el-pagination>
@@ -202,10 +202,10 @@
             </el-form-item>
             <el-form-item
                 label="学号:"
-                prop="studentId"
+                prop="student_id"
             >
               <el-input
-                  v-model="classData.studentId"
+                  v-model="classData.student_id"
                   placeholder="请填写用户学号"
                   maxlength="12"
               />
@@ -296,7 +296,7 @@ export default {
       input: '',
       counts: 0,
       page: 1,
-      pageSize: 5,
+      page_size: 5,
       tableData : [],
       userState : '',
       checkList: [],
@@ -309,7 +309,7 @@ export default {
         id:'',//id
         title: '新建用户',
         dialogVisible: false,
-        studentId: '',
+        student_id: '',
         sex:'男',
         name: '',//用户名
         username:'',
@@ -378,7 +378,7 @@ export default {
             'trigger': ['blur']
           },
         ],
-        'studentId': [
+        'student_id': [
           {
             'required': true,
             // 'message': '请填写用户密码',
@@ -423,8 +423,8 @@ export default {
     async init () {
       this.usertableloading = true
       let params = {}
-      params.pageNum = this.page
-      params.pageSize = this.pageSize
+      params.page_num = this.page
+      params.page_size = this.page_size
       if (this.input){
         params.name = this.input ? this.input : undefined
       }
@@ -463,7 +463,7 @@ export default {
         this.classData.username = String(st.username);
         this.classData.status = String(st.status);
         this.classData.avatar = String(st.avatar);
-        this.classData.studentId = String(st.studentId);
+        this.classData.student_id = String(st.student_id);
         this.classData.phone = String(st.phone);
         this.classData.image = String(st.image);
         this.classData.sex = String(st.sex);
@@ -534,11 +534,11 @@ export default {
     },
     handleSizeChange (val) {
       console.log(val)
-      this.pageSize = val
+      this.page_size = val
       this.init()
     },
     handleCurrentChange (val) {
-      if (val>(Number(this.counts)/Number(this.pageSize))+1){
+      if (val>(Number(this.counts)/Number(this.page_size))+1){
         this.$message.info("最大页了")
         return
       }
@@ -570,8 +570,8 @@ export default {
       if (this.classData.username) {
         this.classData.username = ''
       }
-      if (this.classData.studentId) {
-        this.classData.studentId = ''
+      if (this.classData.student_id) {
+        this.classData.student_id = ''
       }
     },
 
@@ -616,7 +616,7 @@ export default {
               this.$message.error("请你输入完整")
               return false;
             }
-            if (!this.classData.studentId) {
+            if (!this.classData.student_id) {
               this.$message.error("请你输入学号")
               return false;
             }
@@ -628,7 +628,7 @@ export default {
             data.phone = this.classData.phone
             data.status = this.classData.status
             data.username = this.classData.username
-            data.studentId = this.classData.studentId
+            data.student_id = this.classData.student_id
             const res = await Api.addUser(data)
             if (String(res.code) === '1') {
               this.$message.success(res.msg)
@@ -681,7 +681,7 @@ export default {
                 this.$message.error("请你输入完整")
                 return false;
               }
-              if (!this.classData.studentId) {
+              if (!this.classData.student_id) {
                 this.$message.error("请你输入学号")
                 return false;
               }
@@ -693,7 +693,7 @@ export default {
               data.phone = this.classData.phone
               data.status = this.classData.status
               data.username = this.classData.username
-              data.studentId = this.classData.studentId
+              data.student_id = this.classData.student_id
               const res = await Api.addUser(data)
               if (String(res.code)==='1'){
                 this.$message.success(res.msg)
@@ -733,7 +733,7 @@ export default {
             this.$message.error("请你输入完整")
             return false;
           }
-          if (!this.classData.studentId) {
+          if (!this.classData.student_id) {
             this.$message.error("请你输入学号")
             return false;
           }
@@ -745,7 +745,7 @@ export default {
           data.phone = this.classData.phone
           data.status = this.classData.status
           data.username = this.classData.username
-          data.studentId = this.classData.studentId
+          data.student_id = this.classData.student_id
           const res = await Api.updataforuser(data)
           if (String(res.code)==='1'){
             this.$message.success(res.msg)

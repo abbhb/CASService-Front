@@ -48,7 +48,7 @@
                             <el-input v-model="password" type="password" show-password placeholder="密码"
                                       prefix-icon="el-icon-lock" maxlength="20"
                             />
-                            <el-input v-model="rePassword" type="password" show-password placeholder="确认密码"
+                            <el-input v-model="re_password" type="password" show-password placeholder="确认密码"
                                       prefix-icon="el-icon-lock" maxlength="20"
                             />
                         </div>
@@ -88,7 +88,7 @@ export default {
             email:'test@163.com',
             currentStep:1,//当前处于第几步
             code:'',//验证码
-            rePassword:'',//确认密码
+            re_password:'',//确认密码
             password:'',//密码
         }
     },
@@ -123,11 +123,11 @@ export default {
                     //修改失败
                     this.$message.error("请输入密码")
                 }
-                if (this.rePassword===''){
+                if (this.re_password===''){
                     //修改失败
                     this.$message.error("请输入确认密码")
                 }
-                if (this.rePassword!==this.password){
+                if (this.re_password!==this.password){
                     //修改失败
                     this.$message.error("两次密码必须一致")
                 }
@@ -146,8 +146,8 @@ export default {
             let data = {}
             data.email = this.email
             data.password = this.password
-            data.rePassword = this.rePassword
-            data.mailCode = this.code
+            data.re_password = this.re_password
+            data.mail_code = this.code
             const res = await findPassword(data)
             if (String(res.code) === '1') {
                 //修改成功

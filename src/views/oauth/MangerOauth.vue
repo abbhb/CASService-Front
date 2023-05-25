@@ -34,39 +34,39 @@
                     v-loading="usertableloading"
             >
                 <el-table-column
-                        prop="clientName"
+                        prop="client_name"
                         sortable
                         label="客户端名称"
                         width="120"
                 ></el-table-column>
                 <el-table-column
-                        prop="grantType"
+                        prop="grant_type"
                         label="授权类型"
                         sortable
                         width="120"
                 >
                     <template slot-scope="{ row }">
-                        <span v-if="String(row.grantType)==='1'">授权码模式</span>
+                        <span v-if="String(row.grant_type)==='1'">授权码模式</span>
                         <span v-else>其他</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column
-                        prop="redirectUri"
+                        prop="redirect_uri"
                         sortable
                         label="回调地址"
                         width="100"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="clientId"
+                    prop="client_id"
                     sortable
                     label="客户端id"
                     width="160"
                 >
                 </el-table-column>
                 <el-table-column
-                    prop="clientSecret"
+                    prop="client_secret"
                     sortable
                     label="客户端秘钥"
                     width="160"
@@ -74,13 +74,13 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="createTime"
+                        prop="create_time"
                         sortable
                         label="创建时间"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="updateTime"
+                        prop="update_time"
                         label="更新时间"
                 >
                 </el-table-column>
@@ -117,7 +117,7 @@
                     @current-change="handleCurrentChange"
                     :current-page="page"
                     :page-sizes="[5, 10, 20, 40]"
-                    :page-size="pageSize"
+                    :page-size="page_size"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="counts">
             </el-pagination>
@@ -145,12 +145,12 @@
                                     label="名称:"
                             >
                                 <el-input
-                                        v-model="classData.clientName"
+                                        v-model="classData.client_name"
                                         placeholder="请填写客户端名称"
                                 />
                             </el-form-item>
                             <el-form-item label="授权类型：">
-                                <el-select disabled v-model="classData.grantType" placeholder="请选择授权类型">
+                                <el-select disabled v-model="classData.grant_type" placeholder="请选择授权类型">
                                     <el-option
                                             v-for="item in grantTypeoptions"
                                             :key="item.label"
@@ -175,7 +175,7 @@
                                 </template>
                                 <el-input
                                     style="width: 300px;"
-                                    v-model="classData.redirectUri"
+                                    v-model="classData.redirect_uri"
                                     placeholder="选填:例如http://www.baidu.com"
                                 />
                             </el-form-item>
@@ -186,7 +186,7 @@
                                 v-if="this.action==='edit'"
                             >
                                 <el-input
-                                    v-model="classData.clientId"
+                                    v-model="classData.client_id"
                                     disabled
                                     style="width: 280px;"
                                     placeholder="请填写客户端ID"
@@ -194,9 +194,10 @@
                             </el-form-item>
                             <el-form-item
                                 label="客户端秘钥:"
+                                v-if="this.action==='edit'"
                             >
                                 <el-input
-                                    v-model="classData.clientSecret"
+                                    v-model="classData.client_secret"
                                     :disabled="unEditUnSafeOption"
                                     style="width: 280px;"
                                     placeholder="请填写客户端秘钥"
@@ -256,7 +257,7 @@ export default {
             input: '',
             counts: 0,
             page: 1,
-            pageSize: 5,
+            page_size: 5,
             tableData : [],
             checkList: [],
             usertableloading:false,
@@ -268,11 +269,11 @@ export default {
                 id:'',//id
                 title: '新建客户端',
                 dialogVisible: false,
-                redirectUri: '',
-                grantType:1,//默认为授权码模式
-                clientName:'',
-                clientId:'',
-                clientSecret:'',
+                redirect_uri: '',
+                grant_type:1,//默认为授权码模式
+                client_name:'',
+                client_id:'',
+                client_secret:'',
             },
             inputStyle  : {'flex':1},
             unEditUnSafeOption:true,
@@ -282,10 +283,10 @@ export default {
     computed: {
         rules () {
             return {
-                'clientName': [
+                'client_name': [
                     {'required': true, 'message': '请选择客户端名称', 'trigger': ['change']}
                 ],
-                'redirectUri': [
+                'redirect_uri': [
                     {'required': false, 'message': '请输入回调地址[可选]', 'trigger': ['change']}
                 ],
             }
@@ -324,13 +325,13 @@ export default {
         },
         editHandel(row){
             this.classData.id = row.id
-            this.classData.clientName = row.clientName
-            this.classData.redirectUri = row.redirectUri
-            this.classData.grantType = row.grantType
+            this.classData.client_name = row.client_name
+            this.classData.redirect_uri = row.redirect_uri
+            this.classData.grant_type = row.grant_type
             this.classData.title = '编辑客户端'
             this.classData.dialogVisible = true
-            this.classData.clientId = row.clientId
-            this.classData.clientSecret = row.clientSecret
+            this.classData.client_id = row.client_id
+            this.classData.client_secret = row.client_secret
             this.action = 'edit'
 
         },
@@ -339,7 +340,7 @@ export default {
             // if (this.input){
             //     params.name = this.input ? this.input : undefined
             // }
-            const res = await listAuth(this.page,this.pageSize)
+            const res = await listAuth(this.page,this.page_size)
             console.log(res)
             if (String(res.code) === '1') {
                 this.tableData = res.data.records || []
@@ -389,11 +390,11 @@ export default {
         },
         handleSizeChange (val) {
             console.log(val)
-            this.pageSize = val
+            this.page_size = val
             this.init()
         },
         handleCurrentChange (val) {
-            if (val>(Number(this.counts)/Number(this.pageSize))+1){
+            if (val>(Number(this.counts)/Number(this.page_size))+1){
                 this.$message.info("最大页了")
                 return
             }
@@ -402,11 +403,11 @@ export default {
         },
         cleanform(){
 
-            if (this.classData.redirectUri) {
-                this.classData.redirectUri = ''
+            if (this.classData.redirect_uri) {
+                this.classData.redirect_uri = ''
             }
-            if (this.classData.clientName) {
-                this.classData.clientName = ''
+            if (this.classData.client_name) {
+                this.classData.client_name = ''
             }
         },
 
@@ -425,18 +426,18 @@ export default {
                     } else {
                         let data = {}
                         console.log(this.classData)
-                        if (String(this.classData.clientName)==='') {
+                        if (String(this.classData.client_name)==='') {
                             this.$message.error("请你输入完整")
                             return false;
                         }
-                        data.redirectUri = this.classData.redirectUri
-                        data.clientName = this.classData.clientName
-                        data.grantType = this.classData.grantType
+                        data.redirect_uri = this.classData.redirect_uri
+                        data.client_name = this.classData.client_name
+                        data.grant_type = this.classData.grant_type
 
                         const res = await addAuth(data)
                         if (String(res.code)==='1'){
-                            this.$message.success(res.data)
-
+                            //试用dialog展示数据
+                            this.$message.success(res.data || '操作成功')
                             this.handleQuery()
                             this.cancel()
                             this.dialogVisible = false
@@ -456,15 +457,15 @@ export default {
                     } else {
                         let data = {}
                         console.log(this.classData)
-                        if (String(this.classData.clientName)==='') {
+                        if (String(this.classData.client_name)==='') {
                             this.$message.error("请你输入完整")
                             return false;
                         }
                         data.id = this.classData.id
-                        data.redirectUri = this.classData.redirectUri
-                        data.clientName = this.classData.clientName
-                        data.grantType = this.classData.grantType
-                        data.clientSecret = this.classData.clientSecret
+                        data.redirect_uri = this.classData.redirect_uri
+                        data.client_name = this.classData.client_name
+                        data.grant_type = this.classData.grant_type
+                        data.client_secret = this.classData.client_secret
 
                         const res = await editAuth(data)
                         if (String(res.code)==='1'){

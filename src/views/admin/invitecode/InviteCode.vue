@@ -40,7 +40,7 @@
                         width="50"
                 ></el-table-column>
                 <el-table-column
-                        prop="inviteCode"
+                        prop="invite_code"
                         sortable
                         label="邀请码"
                         width="300"
@@ -58,20 +58,20 @@
                 </el-table-column>
 
                 <el-table-column
-                        prop="usageCount"
+                        prop="usage_count"
                         sortable
                         label="已使用次数"
                         width="100"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="createTime"
+                        prop="create_time"
                         sortable
                         label="创建时间"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="createUserName"
+                        prop="create_user"
                         label="创建用户"
                 >
                 </el-table-column>
@@ -100,7 +100,7 @@
                     @current-change="handleCurrentChange"
                     :current-page="page"
                     :page-sizes="[5, 10, 20, 40]"
-                    :page-size="pageSize"
+                    :page-size="page_size"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="counts">
             </el-pagination>
@@ -128,7 +128,7 @@
                                     label="生成条数:"
                             >
                                 <el-input
-                                        v-model="classData.numberOfLines"
+                                        v-model="classData.number_of_lines"
                                         placeholder="请填写邀请码生成条数"
                                         type="number"
                                         maxlength="2"
@@ -189,7 +189,7 @@ export default {
             input: '',
             counts: 0,
             page: 1,
-            pageSize: 5,
+            page_size: 5,
             tableData : [],
             checkList: [],
             usertableloading:false,
@@ -201,17 +201,17 @@ export default {
                 id:'',//id
                 title: '新建邀请码',
                 dialogVisible: false,
-                numberOfLines: 1,
+                number_of_lines: 1,
                 persistence:0,//默认为邀请码
             },
             inputStyle  : {'flex':1},
         }
     },
     watch:{
-        'classData.numberOfLines':{
+        'classData.number_of_lines':{
             handler(val1,val2){
                 if (val1<1){
-                    this.classData.numberOfLines = val2
+                    this.classData.number_of_lines = val2
                 }
             }
         }
@@ -222,7 +222,7 @@ export default {
                 'persistence': [
                     {'required': true, 'message': '请选择邀请码限制', 'trigger': ['change']}
                 ],
-                'numberOfLines': [
+                'number_of_lines': [
                     {'required': true, 'message': '请输入生成条数', 'trigger': ['change']}
                 ],
             }
@@ -251,8 +251,8 @@ export default {
         async init () {
             this.usertableloading = true
             let params = {}
-            params.pageNum = this.page
-            params.pageSize = this.pageSize
+            params.page_num = this.page
+            params.page_size = this.page_size
             // if (this.input){
             //     params.name = this.input ? this.input : undefined
             // }
@@ -337,11 +337,11 @@ export default {
         },
         handleSizeChange (val) {
             console.log(val)
-            this.pageSize = val
+            this.page_size = val
             this.init()
         },
         handleCurrentChange (val) {
-            if (val>(Number(this.counts)/Number(this.pageSize))+1){
+            if (val>(Number(this.counts)/Number(this.page_size))+1){
                 this.$message.info("最大页了")
                 return
             }
@@ -350,8 +350,8 @@ export default {
         },
         cleanform(){
 
-            if (this.classData.numberOfLines) {
-                this.classData.numberOfLines = 1
+            if (this.classData.number_of_lines) {
+                this.classData.number_of_lines = 1
             }
             if (this.classData.persistence) {
                 this.classData.persistence = 0
@@ -373,17 +373,17 @@ export default {
                         } else {
                             let data = {}
                             console.log(this.classData)
-                            if (String(this.classData.numberOfLines)==='') {
+                            if (String(this.classData.number_of_lines)==='') {
                                 this.$message.error("请你输入完整")
                                 return false;
                             }
-                            if (String(this.classData.numberOfLines)==='') {
+                            if (String(this.classData.number_of_lines)==='') {
                                 this.$message.error("请你输入完整")
                                 return false;
                             }
                             data.persistence = Number(this.classData.persistence)
 
-                            if (String(this.classData.numberOfLines)==='1'){
+                            if (String(this.classData.number_of_lines)==='1'){
 
                                 const res = await addInviteCodeOne(data)
                                 if (String(res.code)==='1'){
@@ -397,7 +397,7 @@ export default {
                                 }
                                 console.log(res)
                             }else {
-                                data.numberOfLines = Number(this.classData.numberOfLines)
+                                data.number_of_lines = Number(this.classData.number_of_lines)
                                 const res = await addInviteCodeList(data)
                                 if (String(res.code)==='1'){
                                     this.$message.success(res.msg)

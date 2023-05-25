@@ -40,8 +40,8 @@ export default {
             getEmailCodeStatus: false,
             count: 60,//电子邮件倒计时
             timer: null,//电子邮件倒计时
-            randomCode:'',
-            verificationCode:'',
+            random_code:'',
+            verification_code:'',
             sliderVerifyKey:true,
         }
     },
@@ -60,8 +60,8 @@ export default {
         verifySuccess(data) {
             let that = this
             console.log(data)
-            this.randomCode = data.nonceStr
-            this.verificationCode = data.value
+            this.random_code = data.nonce_str
+            this.verification_code = data.value
             setTimeout(async function () {
                 that.openVerify = false;
                 console.log('验证码已关闭...')
@@ -107,15 +107,15 @@ export default {
 
             let data = {
                 "email": this.email,
-                "randomCode": this.randomCode,
-                "verificationCode": this.verificationCode
+                "random_code": this.random_code,
+                "verification_code": this.verification_code
             }
             const res = await getEmail(data)
             if (String(res.code) === '1') {
                 this.$message.success(res.msg)
                 this.$emit('successAdditionalMethod');
-                this.randomCode = ''
-                this.verificationCode = ''
+                this.random_code = ''
+                this.verification_code = ''
                 this.getEmailCodeStatus = true
                 const TIME_COUNT = 60;
                 if (!this.timer) {

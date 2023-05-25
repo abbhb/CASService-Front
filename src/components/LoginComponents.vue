@@ -54,13 +54,13 @@
                               prefix-icon="el-icon-lock" maxlength="20"
                     />
                 </el-form-item>
-                <el-form-item prop="rePassword">
-                    <el-input v-model="registrationForm.rePassword" type="password" show-password placeholder="确认密码"
+                <el-form-item prop="re_password">
+                    <el-input v-model="registrationForm.re_password" type="password" show-password placeholder="确认密码"
                               prefix-icon="el-icon-lock" maxlength="20"
                     />
                 </el-form-item>
-                <el-form-item prop="inviteCode">
-                    <el-input v-model="registrationForm.inviteCode" show-password placeholder="邀请码"
+                <el-form-item prop="invite_code">
+                    <el-input v-model="registrationForm.invite_code" show-password placeholder="邀请码"
                               prefix-icon="el-icon-magic-stick" maxlength="20"
                     />
                 </el-form-item>
@@ -70,9 +70,9 @@
                               prefix-icon="el-icon-message"
                     />
                 </el-form-item>
-                <el-form-item prop="mailCode">
+                <el-form-item prop="mail_code">
                     <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;margin:auto;">
-                        <el-input v-model="registrationForm.mailCode" placeholder="请输入邮箱验证码"
+                        <el-input v-model="registrationForm.mail_code" placeholder="请输入邮箱验证码"
                                   prefix-icon="el-icon-magic-stick"
                         />
                         <EmailButton :email="registrationForm.email"></EmailButton>
@@ -127,13 +127,13 @@ export default {
                 username: '',
                 password: '',
                 sex: '未知',
-                rePassword: '',
+                re_password: '',
                 permission: '2',
                 status: '1',//默认启用
                 avatar: '',//url
                 email: '',
-                mailCode: '',
-                inviteCode: '',//邀请码
+                mail_code: '',
+                invite_code: '',//邀请码
             },
             loading: false,
             isRegistration: false,//默认是登录
@@ -196,7 +196,7 @@ export default {
                         'trigger': ['change']
                     },
                 ],
-                'rePassword': [
+                're_password': [
                     {
                         'required': true,
                         'message': '请填写确认密码',
@@ -219,17 +219,17 @@ export default {
         const data = {}
         if (this.isCASLogin()) {
             const service = window.location.search.split("service=")[1].split("&")[0]
-            data.redirectUri = service
+            data.redirect_uri = service
         } else if (this.isOAuth2Login()){
             //OAuth2.0登录
             if (window.location.search.indexOf("redirect_uri") !== -1) {
-                const redirectUri = window.location.search.split("redirect_uri=")[1].split("&")[0]
-                data.redirectUri = redirectUri
+                const redirect_uri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                data.redirect_uri = redirect_uri
             }
-            const clientId = window.location.search.split("client_id=")[1].split("&")[0]
-            data.clientId = clientId
-            const responseType = window.location.search.split("response_type=")[1].split("&")[0]
-            data.responseType = responseType
+            const client_id = window.location.search.split("client_id=")[1].split("&")[0]
+            data.client_id = client_id
+            const response_type = window.location.search.split("response_type=")[1].split("&")[0]
+            data.response_type = response_type
             if (window.location.search.indexOf("state") !== -1) {
                 const state = window.location.search.split("state=")[1].split("&")[0]
                 data.state = state
@@ -279,7 +279,7 @@ export default {
                         this.$message.error("请你输入完整")
                         return false;
                     }
-                    if (!(this.registrationForm.password === this.registrationForm.rePassword)) {
+                    if (!(this.registrationForm.password === this.registrationForm.re_password)) {
                         this.$message.error("确认密码需要和密码一致")
                     }
                     if (!this.registrationForm.status) {
@@ -294,11 +294,11 @@ export default {
                         this.$message.error("不可在用户名中包含'@'")
                         return false;
                     }
-                    if (!this.registrationForm.inviteCode) {
+                    if (!this.registrationForm.invite_code) {
                         this.$message.error("验证码问题")
                         return false;
                     }
-                    if (!this.registrationForm.mailCode) {
+                    if (!this.registrationForm.mail_code) {
                         this.$message.error("验证码问题")
                         return false;
                     }
@@ -309,9 +309,9 @@ export default {
                     data.status = this.registrationForm.status
                     data.username = this.registrationForm.username
                     data.email = this.registrationForm.email
-                    data.rePassword = this.registrationForm.rePassword
-                    data.mailCode = this.registrationForm.mailCode
-                    data.inviteCode = this.registrationForm.inviteCode
+                    data.re_password = this.registrationForm.re_password
+                    data.mail_code = this.registrationForm.mail_code
+                    data.invite_code = this.registrationForm.invite_code
                     const res = await registerUser(data)
                     if (String(res.code) === '1') {
                         this.$message.success(res.msg)
@@ -328,8 +328,8 @@ export default {
             });
         },
         cancelForm() {
-            this.VCode.randomCode = ''
-            this.VCode.verificationCode = ''
+            this.registrationForm.random_code = ''
+            this.registrationForm.verification_code = ''
             this.registrationForm.sex = '未知'
             this.registrationForm.password = ''
             this.registrationForm.avatar = ''
@@ -370,10 +370,10 @@ export default {
             } else if (String(res.code) === '302') {
                 //需要重定向
                 localStorage.setItem('tgc',String(res.data.tgc))
-                if (res.data.redirectUri.indexOf('?') === -1) {
-                    window.location.href = res.data.redirectUri + '?ticket=' + res.data.ticket;
+                if (res.data.redirect_uri.indexOf('?') === -1) {
+                    window.location.href = res.data.redirect_uri + '?ticket=' + res.data.ticket;
                 }else {
-                    window.location.href = res.data.redirectUri + '&ticket=' + res.data.ticket;
+                    window.location.href = res.data.redirect_uri + '&ticket=' + res.data.ticket;
 
                 }
             } else if (String(res.code)==='303'){
@@ -381,7 +381,7 @@ export default {
                 console.log(res.data)
                 localStorage.setItem('tgc',String(res.data.tgc))
                 //此处验证可得必须加上该加的括号，前面最好加个字符串不然容易报错
-                window.location.href = '' + res.data.redirectUri + '?code='+res.data.code+(res.data.state?'&state='+res.data.state:'');
+                window.location.href = '' + res.data.redirect_uri + '?code='+res.data.code+(res.data.state?'&state='+res.data.state:'');
             } else if (String(res.code) === '308') {
                 //必须补全信息
                 localStorage.setItem('userInfo', JSON.stringify(res.data))
@@ -395,7 +395,9 @@ export default {
                 router.push({name: 'login'})
             }
             else {
-                this.$message.error(res.msg)
+                if (res.msg){
+                    this.$message.error(res.msg)
+                }
                 this.loading = false
             }
         },
@@ -410,17 +412,17 @@ export default {
                     if (this.isCASLogin()) {
                         //CAS登录,data参数暂时只需需要添加redirectUri
                         const service = window.location.search.split("service=")[1].split("&")[0]
-                        data.redirectUri = service
+                        data.redirect_uri = service
                     }else if (this.isOAuth2Login()){
                         //OAuth2.0登录
                         if (window.location.search.indexOf("redirect_uri") !== -1) {
-                            const redirectUri = window.location.search.split("redirect_uri=")[1].split("&")[0]
-                            data.redirectUri = redirectUri
+                            const redirect_uri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                            data.redirect_uri = redirect_uri
                         }
-                        const clientId = window.location.search.split("client_id=")[1].split("&")[0]
-                        data.clientId = clientId
-                        const responseType = window.location.search.split("response_type=")[1].split("&")[0]
-                        data.responseType = responseType
+                        const client_id = window.location.search.split("client_id=")[1].split("&")[0]
+                        data.client_id = client_id
+                        const response_type = window.location.search.split("response_type=")[1].split("&")[0]
+                        data.response_type = response_type
                         if (window.location.search.indexOf("state") !== -1) {
                             const state = window.location.search.split("state=")[1].split("&")[0]
                             data.state = state

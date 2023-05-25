@@ -47,33 +47,33 @@ export function firstEN(data) {
 
 export function addAuth(data) {
     return request({
-        url:'/oauth2/addAuth',
+        url:'/oauth/addAuth',
         method:'post',
         data
     })
 }
 export function editAuth(data) {
     return request({
-        url:'/oauth2/editAuth',
+        url:'/oauth/editAuth',
         method:'put',
         data
     })
 }
 
-export function listAuth(pageNum,pageSize) {
+export function listAuth(page_num,page_size) {
     return request({
-        url:'/oauth2/list',
+        url:'/oauth/list',
         method:'get',
         params:{
-            pageNum:pageNum,
-            pageSize:pageSize
+            page_num:page_num,
+            page_size:page_size
         }
     })
 }
 
 export function deleteAuth(id) {
     return request({
-        url:'/oauth2/delete',
+        url:'/oauth/delete',
         method:'delete',
         params:{
             id:id

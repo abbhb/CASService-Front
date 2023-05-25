@@ -79,26 +79,26 @@
         >
             <el-card class="box-card">
                 <el-form ref="emailform" label-position="left" label-width="100px">
-                    <el-form-item v-if="this.emailform.originEmail" label="原邮箱验证码">
+                    <el-form-item v-if="this.emailform.origin_email" label="原邮箱验证码">
                         <div>
-                            检测到你已经绑定<span style="font-weight: 800;">{{ this.emailform.originEmail }}</span>,请先验证!
+                            检测到你已经绑定<span style="font-weight: 800;">{{ this.emailform.origin_email }}</span>,请先验证!
                         </div>
                         <div class="nmlk" style="display: flex;flex-direction: row;">
-                            <el-input v-model="emailform.originCode" id="inputValue" type="text"
+                            <el-input v-model="emailform.origin_code" id="inputValue" type="text"
                                       placeholder="请输入原邮箱验证码"/>
-                            <EmailButton :email="emailform.originEmail"></EmailButton>
+                            <EmailButton :email="emailform.origin_email"></EmailButton>
 
                         </div>
 
                     </el-form-item>
                     <el-form-item label="电子邮箱">
-                        <el-input v-model="emailform.newEmail" type="eamil" placeholder="请输入电子邮箱"/>
+                        <el-input v-model="emailform.new_email" type="eamil" placeholder="请输入电子邮箱"/>
                     </el-form-item>
                     <el-form-item label="邮箱验证码" prop="newpassword">
                         <div style="display: flex;flex-direction: row;">
-                            <el-input v-model="emailform.newCode" id="inputValue" type="text"
+                            <el-input v-model="emailform.new_code" id="inputValue" type="text"
                                       placeholder="请输入新邮箱验证码"/>
-                            <EmailButton :email="emailform.newEmail"></EmailButton>
+                            <EmailButton :email="emailform.new_email"></EmailButton>
 
                         </div>
 
@@ -128,10 +128,10 @@ export default {
         return {
             msgText: "",
             emailform: {
-                originEmail: '',
-                originCode: '',
-                newEmail: '',
-                newCode: '',
+                origin_email: '',
+                origin_code: '',
+                new_email: '',
+                new_code: '',
             },
             userInfo: {},
             classData: {
@@ -175,7 +175,7 @@ export default {
         if (userInfo) {
             this.userInfo = JSON.parse(userInfo)
             if (this.userInfo.email) {
-                this.emailform.originEmail = this.userInfo.email
+                this.emailform.origin_email = this.userInfo.email
             }
         }
     },
@@ -195,10 +195,10 @@ export default {
         },
         async onSubmit() {
             const data = await emailWithUser({
-                originEmail: this.emailform.originEmail,
-                originCode: this.emailform.originCode,
-                newEmail: this.emailform.newEmail,
-                newCode: this.emailform.newCode
+                origin_email: this.emailform.origin_email,
+                origin_code: this.emailform.origin_code,
+                new_email: this.emailform.new_email,
+                new_code: this.emailform.new_code
             });
             if (String(data.code) === '1') {
                 this.$message.success(data.msg);

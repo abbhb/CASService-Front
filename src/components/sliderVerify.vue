@@ -1,11 +1,11 @@
 <template>
-    <div class="slide-verify" :style="{width: canvasWidth + 'px'}" onselectstart="return false;">
+    <div class="slide-verify" :style="{width: canvas_width + 'px'}" onselectstart="return false;">
         <!-- 图片加载遮蔽罩 -->
-        <div :class="{'img-loading': isLoading}" :style="{height: canvasHeight + 'px'}" v-if="isLoading">
+        <div :class="{'img-loading': isLoading}" :style="{height: canvas_height + 'px'}" v-if="isLoading">
             <i class="el-icon-loading"></i>
         </div>
         <!-- 认证成功后的文字提示 -->
-        <div class="success-hint" :style="{height: canvasHeight + 'px'}" v-if="verifySuccess">{{ successHint }}</div>
+        <div class="success-hint" :style="{height: canvas_height + 'px'}" v-if="verifySuccess">{{ successHint }}</div>
         <!--刷新按钮-->
         <div class="refresh-icon" @click="refresh">
             <i class="el-icon-refresh"></i>
@@ -13,14 +13,14 @@
         <!--前端生成-->
         <template v-if="isFrontCheck">
             <!--验证图片-->
-            <canvas ref="canvas" class="slide-canvas" :width="canvasWidth" :height="canvasHeight"/>
+            <canvas ref="canvas" class="slide-canvas" :width="canvas_width" :height="canvas_height"/>
             <!--阻塞块-->
-            <canvas ref="block" class="slide-block" :width="canvasWidth" :height="canvasHeight"/>
+            <canvas ref="block" class="slide-block" :width="canvas_width" :height="canvas_height"/>
         </template>
         <!--后端生成-->
         <template v-else>
             <!--验证图片-->
-            <img ref="canvas" class="slide-canvas" :width="canvasWidth" :height="canvasHeight"/>
+            <img ref="canvas" class="slide-canvas" :width="canvas_width" :height="canvas_height"/>
             <!--阻塞块-->
             <img ref="block" :class="['slide-block', {'verify-fail': verifyFail}]"/>
         </template>
@@ -83,17 +83,17 @@ export default {
             default: 42,
         },
         // 阻塞块弧度
-        blockRadius: {
+        block_radius: {
             type: Number,
             default: 10,
         },
         // 画布宽度
-        canvasWidth: {
+        canvas_width: {
             type: Number,
             default: 320,
         },
         // 画布高度
-        canvasHeight: {
+        canvas_height: {
             type: Number,
             default: 155,
         },
@@ -130,11 +130,11 @@ export default {
             // 阻塞块画布对象
             blockCtx: null,
             // 阻塞块宽度
-            blockWidth: this.blockLength * 2,
+            block_width: this.blockLength * 2,
             // 阻塞块的横轴坐标
-            blockX: undefined,
+            block_x: undefined,
             // 阻塞块的纵轴坐标
-            blockY: undefined,
+            block_y: undefined,
             // 图片对象
             image: undefined,
             // 移动的X轴坐标
@@ -156,7 +156,7 @@ export default {
             // 成功提示
             successHint: '',
             // 随机字符串
-            nonceStr: undefined,
+            nonce_str: undefined,
         };
     },
 
@@ -185,11 +185,11 @@ export default {
             // 阻塞块画布对象
             this.blockCtx = null
             // 阻塞块宽度
-            this.blockWidth = this.blockLength * 2
+            this.block_width = this.blockLength * 2
             // 阻塞块的横轴坐标
-            this.blockX = undefined
+            this.block_x = undefined
             // 阻塞块的纵轴坐标
-            this.blockY = undefined
+            this.block_y = undefined
             // 图片对象
             this.image = undefined
             // 移动的X轴坐标
@@ -211,7 +211,7 @@ export default {
             // 成功提示
             this.successHint = ''
             // 随机字符串
-            this.nonceStr = undefined
+            this.nonce_str = undefined
         },
         /* 初始化DOM对象*/
         initDom() {
@@ -231,11 +231,11 @@ export default {
             const data = {};
             getCodeImg(data).then((response) => {
                 const data = response.data;
-                this.nonceStr = data.nonceStr
-                self.nonceStr = data.nonceStr;
-                self.$refs.block.src = data.blockSrc;
-                self.$refs.block.style.top = data.blockY + 'px';
-                self.$refs.canvas.src = data.canvasSrc;
+                this.nonce_str = data.nonce_str
+                self.nonce_str = data.nonce_str;
+                self.$refs.block.src = data.block_src;
+                self.$refs.block.style.top = data.block_y + 'px';
+                self.$refs.canvas.src = data.canvas_src;
             }).finally(() => {
                 self.isLoading = false;
             });
@@ -244,18 +244,18 @@ export default {
         initImage() {
             const image = this.createImage(() => {
                 this.drawBlock();
-                let {canvasWidth, canvasHeight, blockX, blockY, blockRadius, blockWidth} = this;
-                this.canvasCtx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
-                this.blockCtx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+                let {canvas_width, canvas_height, block_x, block_y, block_radius, block_width} = this;
+                this.canvasCtx.drawImage(image, 0, 0, canvas_width, canvas_height);
+                this.blockCtx.drawImage(image, 0, 0, canvas_width, canvas_height);
                 // 将抠图防止最左边位置
-                let yAxle = blockY - blockRadius * 2;
-                let ImageData = this.blockCtx.getImageData(blockX, yAxle, blockWidth, blockWidth);
-                this.blockObj.width = blockWidth;
+                let yAxle = block_y - block_radius * 2;
+                let ImageData = this.blockCtx.getImageData(block_x, yAxle, block_width, block_width);
+                this.blockObj.width = block_width;
                 this.blockCtx.putImageData(ImageData, 0, yAxle);
                 // 图片加载完关闭遮蔽罩
                 this.isLoading = false;
                 // 前端校验设置特殊值
-                this.nonceStr = 'loyer';
+                this.nonce_str = 'loyer';
             });
             this.image = image;
         },
@@ -281,15 +281,15 @@ export default {
         },
         /* 绘制阻塞块*/
         drawBlock() {
-            this.blockX = this.getNonceByRange(this.blockWidth + 10, this.canvasWidth - (this.blockWidth + 10));
-            this.blockY = this.getNonceByRange(10 + this.blockRadius * 2, this.canvasHeight - (this.blockWidth + 10));
+            this.block_x = this.getNonceByRange(this.block_width + 10, this.canvas_width - (this.block_width + 10));
+            this.block_y = this.getNonceByRange(10 + this.block_radius * 2, this.canvas_height - (this.block_width + 10));
             this.draw(this.canvasCtx, 'fill');
             this.draw(this.blockCtx, 'clip');
         },
         /* 绘制事件*/
         draw(ctx, operation) {
             const PI = Math.PI;
-            let {blockX: x, blockY: y, blockLength: l, blockRadius: r} = this;
+            let {block_x: x, block_y: y, blockLength: l, block_radius: r} = this;
             // 绘制
             ctx.beginPath();
             ctx.moveTo(x, y);
@@ -359,11 +359,11 @@ export default {
             }
             const moveX = originX - this.originX;
             const moveY = originY - this.originY;
-            if (moveX < 0 || moveX + 40 >= this.canvasWidth) {
+            if (moveX < 0 || moveX + 40 >= this.canvas_width) {
                 return false;
             }
             this.sliderButtonLeft = moveX + 'px';
-            let blockLeft = (this.canvasWidth - 40 - 20) / (this.canvasWidth - 40) * moveX;
+            let blockLeft = (this.canvas_width - 40 - 20) / (this.canvas_width - 40) * moveX;
             this.blockObj.style.left = blockLeft + 'px';
             this.verifyActive = true;
             this.sliderBoxWidth = moveX + 'px';
@@ -397,21 +397,21 @@ export default {
                 // 是否前端校验
                 if (this.isFrontCheck) {
                     const accuracy = this.accuracy <= 1 ? 1 : this.accuracy > 10 ? 10 : this.accuracy; // 容错精度值
-                    const spliced = Math.abs(moveLength - this.blockX) <= accuracy; // 判断是否重合
+                    const spliced = Math.abs(moveLength - this.block_x) <= accuracy; // 判断是否重合
                     if (!spliced) {
                         this.verifyFailEvent();
                     } else {
                         // 设置特殊值，后台特殊处理，直接验证通过
-                        this.$emit('success', {nonceStr: this.nonceStr, value: moveLength});
+                        this.$emit('success', {nonce_str: this.nonce_str, value: moveLength});
                     }
                 } else {
                     let data = {}
-                    data.nonceStr = this.nonceStr
+                    data.nonce_str = this.nonce_str
                     data.value = moveLength
                     const dataa = await checkImageCode(data)
                     if (String(dataa.code) === '1') {
                         this.verifySuccessEvent()
-                        this.$emit('success', {nonceStr: this.nonceStr, value: moveLength});
+                        this.$emit('success', {nonce_str: this.nonce_str, value: moveLength});
                     } else {
                         this.verifyFailEvent(dataa.msg);
                     }
@@ -461,10 +461,10 @@ export default {
             this.sliderButtonLeft = 0;
             if (this.isFrontCheck) {
                 // 刷新画布
-                let {canvasWidth, canvasHeight} = this;
-                this.canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-                this.blockCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-                this.blockObj.width = canvasWidth;
+                let {canvas_width, canvas_height} = this;
+                this.canvasCtx.clearRect(0, 0, canvas_width, canvas_height);
+                this.blockCtx.clearRect(0, 0, canvas_width, canvas_height);
+                this.blockObj.width = canvas_width;
                 // 刷新图片
                 this.image.src = this.getImageSrc();
             } else {
