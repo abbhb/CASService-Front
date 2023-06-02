@@ -2,6 +2,7 @@
     <el-upload
             class="avatar-uploader"
             action="./cas/common/uploadimage"
+            :headers="hearder"
             v-loading="isimageupload"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -32,6 +33,9 @@ export default {
         return {
             Urkl:require('@/assets/image.jpg'),
             isimageupload: false,//图片是否再上传
+            hearder: {
+                tgc: localStorage.getItem('tgc')
+            }
         }
     },
     watch:{
