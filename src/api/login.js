@@ -1,7 +1,6 @@
 import request from '../http/request';
 
 
-
 export function logoutApi(){
     return request({
         url: '/user/logout',
@@ -50,6 +49,7 @@ export function registerUser(data){
         data:data
     });
 }
+
 export function createNavItem(data){
     return request({
         url:'/quicknavigation/createItem',
@@ -58,23 +58,56 @@ export function createNavItem(data){
     });
 }
 
-export function createCategorize(data){
+export function createCategorize(data) {
     return request({
-        url:'/quicknavigation/createCategorize',
-        method:'post',
-        data:data
+        url: '/quicknavigation/createCategorize',
+        method: 'post',
+        data: data
     });
 }
 
-export function getUserList(params){
+
+export function getNavListForFenlei(params) {
     return request({
-        url:'/user/get',
-        method:'get',
+        url: '/quicknavigation/listnavfenlei',
+        method: 'get',
         params
     });
 }
 
-export function hasUserName(params){
+export function getListnavfenleiitem(params) {
+    return request({
+        url: '/quicknavigation/listnavfenleiitem',
+        method: 'get',
+        params
+    });
+}
+
+export function getNavList(params) {
+    return request({
+        url: '/quicknavigation/list',
+        method: 'get',
+        params
+    });
+}
+
+export function getCategorizeSelectOptionsList(params) {
+    return request({
+        url: '/quicknavigation/getCategorizeSelectOptionsList',
+        method: 'get',
+        params
+    });
+}
+
+export function getUserList(params) {
+    return request({
+        url: '/user/get',
+        method: 'get',
+        params
+    });
+}
+
+export function hasUserName(params) {
     return request({
         url:'/user/hasUserName',
         method:'get',
@@ -82,35 +115,6 @@ export function hasUserName(params){
     });
 }
 
-export function getNavListForFenlei(params){
-    return request({
-        url:'/quicknavigation/listnavfenlei',
-        method:'get',
-        params
-    });
-}
-export function getListnavfenleiitem(params){
-    return request({
-        url:'/quicknavigation/listnavfenleiitem',
-        method:'get',
-        params
-    });
-}
-export function getNavList(params){
-    return request({
-        url:'/quicknavigation/list',
-        method:'get',
-        params
-    });
-}
-
-export function getCategorizeSelectOptionsList(params){
-    return request({
-        url:'/quicknavigation/getCategorizeSelectOptionsList',
-        method:'get',
-        params
-    });
-}
 
 export function delUserList(params){
     return request({
@@ -127,19 +131,37 @@ export function deleteNavigationCategorize(params){
         params
     });
 }
-export function deleteNavigationItem(params){
+
+export function deleteNavigationItem(params) {
     return request({
-        url:'/quicknavigation/deleteItem',
-        method:'delete',
+        url: '/quicknavigation/deleteItem',
+        method: 'delete',
         params
     });
 }
 
 
-// 文件上传
-export function postUploadFile (file,copies,printingDirection,printBigValue,needPrintPagesEndIndex,isDUPLEX) {
+export function updataforquicknavigationcategorize(data) {
     return request({
-        url: '/printer/uploadPrint?copies='+copies+'&printingDirection='+printingDirection+'&printBigValue='+printBigValue+'&needPrintPagesEndIndex='+needPrintPagesEndIndex+'&isDuplex='+isDUPLEX,
+        url: '/quicknavigation/updataforquicknavigationcategorize',
+        method: 'put',
+        data
+    });
+}
+
+export function updataforquicknavigationitem(data) {
+    return request({
+        url: '/quicknavigation/updataforquicknavigationitem',
+        method: 'put',
+        data
+    });
+}
+
+
+// 文件上传
+export function postUploadFile(file, copies, printingDirection, printBigValue, needPrintPagesEndIndex, isDUPLEX) {
+    return request({
+        url: '/printer/uploadPrint?copies=' + copies + '&printingDirection=' + printingDirection + '&printBigValue=' + printBigValue + '&needPrintPagesEndIndex=' + needPrintPagesEndIndex + '&isDuplex=' + isDUPLEX,
         method: 'post',
         data: file,
         headers: {
@@ -175,21 +197,7 @@ export function updataforuserself(data){
     });
 }
 
-export function updataforquicknavigationcategorize(data){
-    return request({
-        url:'/quicknavigation/updataforquicknavigationcategorize',
-        method:'put',
-        data
-    });
-}
 
-export function updataforquicknavigationitem(data){
-    return request({
-        url:'/quicknavigation/updataforquicknavigationitem',
-        method:'put',
-        data
-    });
-}
 
 export function uploadImage(data){
     return request({

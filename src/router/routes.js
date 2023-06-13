@@ -12,13 +12,17 @@ import InviteCode from "@/views/admin/invitecode/InviteCode.vue";
 import findPassword from "@/views/user/FindPassword.vue";
 import safeLogout from "@/views/logout/safeLogout.vue";
 import MangerOauth from "@/views/oauth/MangerOauth.vue";
+import dh from "@/views/dh/dh.vue";
+import navfenleiitem from "@/views/nav/navfenleiitem.vue";
+import navfenlei from "@/views/nav/navfenlei.vue";
+
 export default [
 	{
 		path: '/',
 		component: App,
-		meta:{
+		meta: {
 			requireAuth: false,
-			needrole:false
+			needrole: false
 		},
 		children: [
 			{
@@ -62,18 +66,45 @@ export default [
 		path: '/findPassword',
 		name: 'findPassword',
 		component: findPassword,
-		meta:{
+		meta: {
 			requireAuth: false,
-			needrole:false
+			needrole: false
+		}
+	},
+	{
+		path: '/dh',
+		name: 'dh',
+		component: dh,
+		meta: {
+			requireAuth: false,
+			needrole: false
+		}
+	},
+	{
+		path: '/navfenlei',
+		name: 'navfenlei',
+		component: navfenlei,
+		meta: {
+			requireAuth: false,
+			needrole: false
+		}
+	},
+	{
+		path: '/navfenleiitem',
+		name: 'navfenleiitem',
+		component: navfenleiitem,
+		meta: {
+			requireAuth: false,
+			needrole: false
 		}
 	},
 	{
 		path: '/safeLogout',
 		name: 'safeLogout',
 		component: safeLogout,
-		meta:{
+		meta: {
 			requireAuth: true,
-			needrole:false
+			needrole: false
 		}
 	},
 	{

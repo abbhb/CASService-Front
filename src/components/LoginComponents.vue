@@ -4,29 +4,33 @@
             <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
                 <el-form-item prop="username">
                     <el-input
-                            v-model="loginForm.username"
-                            type="text"
-                            auto-complete="off"
-                            placeholder="账号(用户名、电子邮箱)"
-                            maxlength="40"
-                            prefix-icon="el-icon-user"/>
+                        v-model="loginForm.username"
+                        auto-complete="off"
+                        maxlength="40"
+                        placeholder="账号(用户名、电子邮箱)"
+                        prefix-icon="el-icon-user"
+                        type="text"/>
                 </el-form-item>
-                <el-form-item prop="password">
-                    <el-input v-model="loginForm.password" type="password" show-password placeholder="密码"
-                              prefix-icon="el-icon-lock" maxlength="20"
-                              @keyup.enter.native="handleLogin"/>
-                </el-form-item>
+              <el-form-item prop="password">
+                <el-input v-model="loginForm.password" maxlength="20" placeholder="密码" prefix-icon="el-icon-lock"
+                          show-password type="password"
+                          @keyup.enter.native="handleLogin"/>
+              </el-form-item>
 
-                <el-form-item style="width:100%;">
 
-                    <div style="display: flex;flex-flow: column;justify-content: center;align-items: flex-end;">
-                        <el-button :loading="loading" class="login-btn" size="medium" type="primary" style="width:100%;"
-                                   @click.native.prevent="handleLogin">
-                            <span v-if="!loading">登录</span>
-                            <span v-else>登录中...</span>
-                        </el-button>
-                        <el-button :loading="loading" class="login-btn" size="medium" type="primary" style="width:100%;"
-                                   @click.native.prevent="handleRe">
+              <el-form-item prop="day30">
+                <el-checkbox v-model="loginForm.day30">30天内免登录</el-checkbox>
+              </el-form-item>
+              <el-form-item style="width:100%;">
+
+                <div style="display: flex;flex-flow: column;justify-content: center;align-items: flex-end;">
+                  <el-button :loading="loading" class="login-btn" size="medium" style="width:100%;" type="primary"
+                             @click.native.prevent="handleLogin">
+                    <span v-if="!loading">登录</span>
+                    <span v-else>登录中...</span>
+                  </el-button>
+                  <el-button :loading="loading" class="login-btn" size="medium" style="width:100%;" type="primary"
+                             @click.native.prevent="handleRe">
                             <span>注册</span>
 
                         </el-button>
@@ -120,8 +124,9 @@ export default {
     data() {
         return {
             loginForm: {
-                username: '',
-                password: ''
+              username: '',
+              password: '',
+              day30: false,
             },
             registrationForm: {
                 username: '',
@@ -328,14 +333,16 @@ export default {
             });
         },
         cancelForm() {
-            this.registrationForm.random_code = ''
-            this.registrationForm.verification_code = ''
-            this.registrationForm.sex = '未知'
-            this.registrationForm.password = ''
-            this.registrationForm.avatar = ''
-            this.registrationForm.username = ''
-            this.loginForm.password = ''
-            this.loginForm.username = ''
+          this.registrationForm.random_code = ''
+          this.registrationForm.verification_code = ''
+          this.registrationForm.sex = '未知'
+          this.registrationForm.password = ''
+          this.registrationForm.avatar = ''
+          this.registrationForm.username = ''
+          this.loginForm.password = ''
+          this.loginForm.username = ''
+          this.loginForm.day30 = false
+
         },
         handleRe() {
             this.isRegistration = true;
@@ -405,20 +412,25 @@ export default {
             //登录
             this.$refs.loginForm.validate(async (valid) => {
                 if (valid) {
-                    this.loading = true
-                    let data = {}
-                    data.username = this.loginForm.username
-                    data.password = this.loginForm.password
-                    if (this.isCASLogin()) {
-                        //CAS登录,data参数暂时只需需要添加redirectUri
-                        const service = window.location.search.split("service=")[1].split("&")[0]
-                        data.redirect_uri = service
-                    }else if (this.isOAuth2Login()){
-                        //OAuth2.0登录
-                        if (window.location.search.indexOf("redirect_uri") !== -1) {
-                            const redirect_uri = window.location.search.split("redirect_uri=")[1].split("&")[0]
-                            data.redirect_uri = redirect_uri
-                        }
+                  this.loading = true
+                  let data = {}
+                  data.username = this.loginForm.username
+                  data.password = this.loginForm.password
+                  if (this.loginForm.day30) {
+                    data.day30 = 1
+                  } else {
+                    data.day30 = 0
+                  }
+                  if (this.isCASLogin()) {
+                    //CAS登录,data参数暂时只需需要添加redirectUri
+                    const service = window.location.search.split("service=")[1].split("&")[0]
+                    data.redirect_uri = service
+                  } else if (this.isOAuth2Login()) {
+                    //OAuth2.0登录
+                    if (window.location.search.indexOf("redirect_uri") !== -1) {
+                      const redirect_uri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                      data.redirect_uri = redirect_uri
+                    }
                         const client_id = window.location.search.split("client_id=")[1].split("&")[0]
                         data.client_id = client_id
                         const response_type = window.location.search.split("response_type=")[1].split("&")[0]

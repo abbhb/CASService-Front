@@ -11,14 +11,21 @@ export const menuData = [
                 index: '1-1',
                 routerName: "userinfo",
                 iconClassName: "el-icon-user",
-                roles:['10','1','2','3']
+                roles: ['10', '1', '2', '3']
+            },
+            {
+                optionName: '快捷导航',
+                index: '1-2',
+                routerName: "dh",
+                iconClassName: "el-icon-user",
+                roles: ['10', '1', '2', '3']
             },
             {
                 optionName: '安全中心',
-                index: '1-2',
+                index: '1-3',
                 routerName: "safecenter",
                 iconClassName: "el-icon-success",
-                roles:['10','1','2','3']
+                roles: ['10', '1', '2', '3']
             },
         ]
     },
@@ -34,14 +41,28 @@ export const menuData = [
                 index: '2-1',
                 routerName: "UserManagement",
                 iconClassName: "el-icon-user",
-                roles:['10','1'],
+                roles: ['10', '1'],
             },
             {
                 optionName: '邀请码管理',
                 index: '2-2',
                 routerName: "InviteCode",
                 iconClassName: "el-icon-setting",
-                roles:['10','1'],
+                roles: ['10', '1'],
+            },
+            {
+                optionName: '导航分类',
+                index: '2-3',
+                routerName: "navfenlei",
+                iconClassName: "el-icon-guide",
+                roles: ['10', '1'],
+            },
+            {
+                optionName: '导航内容',
+                index: '2-4',
+                routerName: "navfenleiitem",
+                iconClassName: "el-icon-guide",
+                roles: ['10', '1'],
             }
         ]
     },
