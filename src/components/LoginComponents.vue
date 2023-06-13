@@ -372,7 +372,7 @@ export default {
                 localStorage.setItem('userId', String(res.data.id))
                 localStorage.setItem('tgc',String(res.data.tgc))
                 // Cookies.set('tgc',res.data.tgc)
-                router.push({name: 'userinfo'})
+                router.push({name: 'dh'})
 
             } else if (String(res.code) === '302') {
                 //需要重定向

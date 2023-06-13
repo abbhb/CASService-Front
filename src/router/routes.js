@@ -48,18 +48,27 @@ export default [
 		path: '/redirect-en',
 		name: 'redirect-en',
 		component: en,
-		meta:{
+		meta: {
 			requireAuth: false,
-			needrole:false
+			needrole: false
+		}
+	},
+	{
+		path: '/dh',
+		name: 'dh',
+		component: dh,
+		meta: {
+			requireAuth: true,
+			needrole: false
 		}
 	},
 	{
 		path: '/redirect-gitee',
 		name: 'redirect-gitee',
 		component: gitee,
-		meta:{
+		meta: {
 			requireAuth: false,
-			needrole:false
+			needrole: false
 		}
 	},
 	{
@@ -71,33 +80,7 @@ export default [
 			needrole: false
 		}
 	},
-	{
-		path: '/dh',
-		name: 'dh',
-		component: dh,
-		meta: {
-			requireAuth: false,
-			needrole: false
-		}
-	},
-	{
-		path: '/navfenlei',
-		name: 'navfenlei',
-		component: navfenlei,
-		meta: {
-			requireAuth: false,
-			needrole: false
-		}
-	},
-	{
-		path: '/navfenleiitem',
-		name: 'navfenleiitem',
-		component: navfenleiitem,
-		meta: {
-			requireAuth: false,
-			needrole: false
-		}
-	},
+
 	{
 		path: '/safeLogout',
 		name: 'safeLogout',
@@ -129,18 +112,37 @@ export default [
 				path: '/userinfo',
 				name: 'userinfo',
 				component: UserInfo,
-				meta:{
+				meta: {
 					requireAuth: true,
-					needrole:false
+					needrole: false
+				}
+			},
+
+			{
+				path: '/navfenlei',
+				name: 'navfenlei',
+				component: navfenlei,
+				meta: {
+					requireAuth: false,
+					needrole: false
+				}
+			},
+			{
+				path: '/navfenleiitem',
+				name: 'navfenleiitem',
+				component: navfenleiitem,
+				meta: {
+					requireAuth: false,
+					needrole: false
 				}
 			},
 			{
 				path: '/changepassword',
 				name: 'changepassword',
 				component: ChangePassword,
-				meta:{
+				meta: {
 					requireAuth: true,
-					needrole:false
+					needrole: false
 				}
 			},
 			{

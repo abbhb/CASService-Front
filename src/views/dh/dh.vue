@@ -1,75 +1,85 @@
 <template>
-  <div>
-    <div v-for="card in cards"
-         :key="card.id"
-         class="bigBody"
-    >
-      <div
-          v-show="card.item.length!==0"
-          class="smallBody"
-      >
-        <div class="head">
-          <h4 class="text">
-            {{ card.name }}
-          </h4>
-        </div>
-        <div v-for="item in card.item"
-             v-show="item.permission.includes(real_cards.permission)||String(real_cards.permission)==='10'"
-             :key="item.id"
-             class="box_"
+  <div id="Oauth-management" class="sdss">
+    <div class="container">
+      <div class="tableBar">
+        <el-link target="_blank" @click="pathGoTo('houtai','goto')">管理后台</el-link>
+
+
+      </div>
+      <div>
+        <div v-for="card in cards"
+             :key="card.id"
+             class="bigBody"
         >
-          <div class="acard">
-            <div class="box-card" shadow="hover">
-              <div class="ico_ cont_" @click="pathGoTo(item,1)">
-
-                <img v-if="item.image===''" class="img_" src="@/assets/notimage.png">
-                <img v-else :src="item.image" class="img_">
-              </div>
-              <div class="cont_" @click="pathGoTo(item,1)">
-                <div>
-                  <strong class="cont_head">{{ item.name }}</strong>
-                </div>
-                <div class="cont_cont">
-                  <el-tooltip :content="item.introduction" effect="dark" placement="right">
-                    <span>{{ item.introduction | ellipsis }}</span>
-                  </el-tooltip>
-                </div>
-
-              </div>
-              <div class="link_" @click="pathGoTo(item,2)">
-                <el-tooltip content="直达" effect="dark" placement="right">
-                  <i class="el-icon-s-promotion"></i>
-                </el-tooltip>
-              </div>
+          <div
+              v-show="card.item.length!==0"
+              class="smallBody"
+          >
+            <div class="head">
+              <h4 class="text">
+                {{ card.name }}
+              </h4>
             </div>
+            <div v-for="item in card.item"
+                 v-show="item.permission.includes(real_cards.permission)||String(real_cards.permission)==='10'"
+                 :key="item.id"
+                 class="box_"
+            >
+              <div class="acard">
+                <div class="box-card" shadow="hover">
+                  <div class="ico_ cont_" @click="pathGoTo(item,1)">
 
+                    <img v-if="item.image===''" class="img_" src="@/assets/notimage.png">
+                    <img v-else :src="item.image" class="img_">
+                  </div>
+                  <div class="cont_" @click="pathGoTo(item,1)">
+                    <div>
+                      <strong class="cont_head">{{ item.name }}</strong>
+                    </div>
+                    <div class="cont_cont">
+                      <el-tooltip :content="item.introduction" effect="dark" placement="right">
+                        <span>{{ item.introduction | ellipsis }}</span>
+                      </el-tooltip>
+                    </div>
+
+                  </div>
+                  <div class="link_" @click="pathGoTo(item,2)">
+                    <el-tooltip content="直达" effect="dark" placement="right">
+                      <i class="el-icon-s-promotion"></i>
+                    </el-tooltip>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
           </div>
 
+          <MarkDownDialog
+              :clickMaskClose="true"
+              :content="markdownDialog.dialogContent"
+              :isShowDialog.sync="markdownDialog.dialogVisible"
+              :mask="true"
+              :showCloseIcon="true"
+              :title="markdownDialog.dialogTitle"
+              @beforeClose="beforeClose">
+
+          </MarkDownDialog>
+
         </div>
+
+
       </div>
-
-      <MarkDownDialog
-          :clickMaskClose="true"
-          :content="markdownDialog.dialogContent"
-          :isShowDialog.sync="markdownDialog.dialogVisible"
-          :mask="true"
-          :showCloseIcon="true"
-          :title="markdownDialog.dialogTitle"
-          @beforeClose="beforeClose">
-
-      </MarkDownDialog>
-
     </div>
-
-
   </div>
+
 </template>
 
 <script>
 import * as Api from "@/api/login";
 import MarkDownDialog from "@/components/MarkDownDialog.vue";
+import router from "@/router";
 
-// import { marked } from "marked";
 export default {
   name: "dh.vue",
   components: {MarkDownDialog},
@@ -120,6 +130,10 @@ export default {
     },
 
     pathGoTo(row, lo) {
+      if (row === 'houtai' && lo === 'goto') {
+        router.push({name: 'userinfo'})
+        return
+      }
       if (lo === 1) {
         if (String(row.type) === '0') {
           if (String(row.content)) {
