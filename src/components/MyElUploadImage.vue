@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import {getImage} from "@/api/common";
 
 export default {
     name: "MyElUploadImage",
@@ -59,16 +58,6 @@ export default {
     },
     methods: {
          async handelAvatar(q) {
-             if (!q.includes("http")) {
-                 const res = await getImage(q)
-                 if (String(res.code) === '1') {
-                     return String(res.data);
-                 }
-                 console.log(res)
-
-                 return '';
-             }
-             console.log(q)
              return q;
          },
         handleAvatarSuccess(res) {
