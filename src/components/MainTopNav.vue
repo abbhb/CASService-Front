@@ -33,8 +33,6 @@
 
 <script>
 import router from "@/router";
-import {getImage} from "@/api/common";
-
 
 export default {
     name: "MainTopNav",
@@ -90,14 +88,6 @@ export default {
     },
     methods:{
         async getImage(q) {
-            if (!q.includes("http")) {
-                const res = await getImage(q)
-                if (String(res.code) === '1') {
-                    this.avatar = res.data;
-                    return String(res.data);
-                }
-                return '';
-            }
             this.avatar = q;
             return q;
         },
@@ -112,10 +102,7 @@ export default {
             this.$globl.isNeedZoom = true;
             document.body.style.zoom = 0.9
         },
-        async onLogOut() {
-            router.push({name:'safeLogout'})
 
-        },
         toLogin(){
           router.push({name:'login'})
         },
