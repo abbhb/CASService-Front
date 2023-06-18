@@ -76,14 +76,40 @@ export function deleteAuth(id) {
         url:'/oauth/delete',
         method:'delete',
         params:{
-            id:id
+            id: id
         }
     })
 }
+
 export function firstGitee(data) {
     return request({
-        url:'/redirect/firstgitee',
-        method:'post',
+        url: '/redirect/firstgitee',
+        method: 'post',
         data
+    })
+}
+
+export function verify(data, code) {
+    return request({
+        url: '/google_auth/verify?code=' + code,
+        method: 'post',
+        data
+    })
+}
+
+export function changeState(state) {
+    return request({
+        url: '/google_auth/change_state',
+        method: 'get',
+        params: {
+            state
+        }
+    })
+}
+
+export function getGoogleAuthenticator() {
+    return request({
+        url: '/google_auth/get_google_authenticator',
+        method: 'get',
     })
 }
