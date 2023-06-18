@@ -93,16 +93,39 @@
                             <span v-if="!loading">注册</span>
                             <span v-else>注册中...</span>
                         </el-button>
-                        <el-button class="login-btn" size="medium" type="primary" style="width:100%;"
-                                   @click.native.prevent="handleLo">
-                            <span>返回登录</span>
+                      <el-button class="login-btn" size="medium" style="width:100%;" type="primary"
+                                 @click.native.prevent="handleLo">
+                        <span>返回登录</span>
 
-                        </el-button>
+                      </el-button>
                     </div>
 
                 </el-form-item>
             </el-form>
         </div>
+      <el-dialog
+          :append-to-body="true"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :show-close="true"
+          :visible.sync="loginForm.needMFA"
+          class="dialog"
+          style="z-index: 2100"
+          title="动态密码验证"
+          width="20%"
+      >
+        <el-card class="box-card">
+          <div style="display: flex;flex-direction: column">
+            <span>动态密码</span>
+            <div style="display: flex;flex-direction: row">
+              <el-input v-model="loginForm.code"></el-input>
+              <el-button style="margin-left: 5px;" type="primary" @click="handleLoginGoogle">校验</el-button>
+            </div>
+
+          </div>
+
+        </el-card>
+      </el-dialog>
     </div>
 
 
@@ -127,6 +150,8 @@ export default {
               username: '',
               password: '',
               day30: false,
+              needMFA: false,
+              code: '',
             },
             registrationForm: {
                 username: '',
@@ -365,26 +390,29 @@ export default {
                 window.location.search.indexOf("client_id") !== -1);
         },
         loginSuccessR(res){
-            if (String(res.code) === '1') {
-                //正常登录
-                localStorage.setItem('userInfo', JSON.stringify(res.data))
-                localStorage.setItem("permission", res.data.permission)
-                localStorage.setItem('userId', String(res.data.id))
-                localStorage.setItem('tgc',String(res.data.tgc))
-                // Cookies.set('tgc',res.data.tgc)
-                router.push({name: 'dh'})
+          if (String(res.code) === '1') {
+            //正常登录
+            localStorage.setItem('userInfo', JSON.stringify(res.data))
+            localStorage.setItem("permission", res.data.permission)
+            localStorage.setItem('userId', String(res.data.id))
+            localStorage.setItem('tgc', String(res.data.tgc))
+            // Cookies.set('tgc',res.data.tgc)
+            router.push({name: 'dh'})
 
-            } else if (String(res.code) === '302') {
-                //需要重定向
-                localStorage.setItem('tgc',String(res.data.tgc))
-                if (res.data.redirect_uri.indexOf('?') === -1) {
-                    window.location.href = res.data.redirect_uri + '?ticket=' + res.data.ticket;
-                }else {
-                    window.location.href = res.data.redirect_uri + '&ticket=' + res.data.ticket;
+          } else if (String(res.code) === '203') {
+            this.loginForm.needMFA = true
+            this.$message.info("请校验动态密码")
+          } else if (String(res.code) === '302') {
+            //需要重定向
+            localStorage.setItem('tgc', String(res.data.tgc))
+            if (res.data.redirect_uri.indexOf('?') === -1) {
+              window.location.href = res.data.redirect_uri + '?ticket=' + res.data.ticket;
+            } else {
+              window.location.href = res.data.redirect_uri + '&ticket=' + res.data.ticket;
 
-                }
-            } else if (String(res.code)==='303'){
-                //oauth2.0协议部分
+            }
+          } else if (String(res.code) === '303') {
+            //oauth2.0协议部分
                 console.log(res.data)
                 localStorage.setItem('tgc',String(res.data.tgc))
                 //此处验证可得必须加上该加的括号，前面最好加个字符串不然容易报错
@@ -440,16 +468,59 @@ export default {
                             data.state = state
                         }
 
-                    } else {
-                        //普通登录
-                        //登录管理系统
-                    }
-                    const res = await login(data)
-                    console.log("code"+res.code)
-                    this.loginSuccessR(res)
+                  } else {
+                    //普通登录
+                    //登录管理系统
+                  }
+                  const res = await login(data)
+                  console.log("code" + res.code)
+                  this.loginSuccessR(res)
                 }
             })
         },
+      async handleLoginGoogle() {
+        //登录
+        this.$refs.loginForm.validate(async (valid) => {
+          if (valid) {
+            this.loading = true
+            let data = {}
+            data.username = this.loginForm.username
+            data.password = this.loginForm.password
+            data.code = this.loginForm.code
+            if (this.loginForm.day30) {
+              data.day30 = 1
+            } else {
+              data.day30 = 0
+            }
+            if (this.isCASLogin()) {
+              //CAS登录,data参数暂时只需需要添加redirectUri
+              const service = window.location.search.split("service=")[1].split("&")[0]
+              data.redirect_uri = service
+            } else if (this.isOAuth2Login()) {
+              //OAuth2.0登录
+              if (window.location.search.indexOf("redirect_uri") !== -1) {
+                const redirect_uri = window.location.search.split("redirect_uri=")[1].split("&")[0]
+                data.redirect_uri = redirect_uri
+              }
+              const client_id = window.location.search.split("client_id=")[1].split("&")[0]
+              data.client_id = client_id
+              const response_type = window.location.search.split("response_type=")[1].split("&")[0]
+              data.response_type = response_type
+              if (window.location.search.indexOf("state") !== -1) {
+                const state = window.location.search.split("state=")[1].split("&")[0]
+                data.state = state
+              }
+
+            } else {
+              //普通登录
+              //登录管理系统
+            }
+            const res = await login(data)
+            console.log("code" + res.code)
+            this.loginSuccessR(res)
+          }
+        })
+      },
     }
 }
 </script>

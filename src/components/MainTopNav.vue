@@ -98,14 +98,17 @@ export default {
         changeThemes(){
           this.$message.info("开发中！请期待")
         },
-        setIsNeedZoom() {
-            this.$globl.isNeedZoom = true;
-            document.body.style.zoom = 0.9
-        },
+      setIsNeedZoom() {
+        this.$globl.isNeedZoom = true;
+        document.body.style.zoom = 0.9
+      },
 
-        toLogin(){
-          router.push({name:'login'})
-        },
+      toLogin() {
+        router.push({name: 'login'})
+      },
+      onLogOut() {
+        router.push({name: 'safeLogout'})
+      },
     }
 }
 </script>
